@@ -1,11 +1,17 @@
+import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Shield, TrendingUp, Zap, DollarSign, Users, Clock } from "lucide-react";
+import { Shield, TrendingUp, Zap, DollarSign, Users, Clock, ArrowLeft } from "lucide-react";
+import { BecomeSellerDialog } from "@/components/BecomeSellerDialog";
+import { useNavigate } from "react-router-dom";
 
 const Sell = () => {
+  const navigate = useNavigate();
+  const [showBecomeSellerDialog, setShowBecomeSellerDialog] = useState(false);
+  
   const benefits = [
     {
       icon: DollarSign,
@@ -43,17 +49,29 @@ const Sell = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <div className="container py-16">
+      <div className="container py-8 px-4 sm:py-16">
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="mb-6 hover:bg-secondary"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
         {/* Hero */}
-        <div className="max-w-3xl mx-auto text-center mb-16">
+        <div className="max-w-3xl mx-auto text-center mb-12 sm:mb-16">
           <Badge className="mb-4 bg-primary text-primary-foreground">For Creators</Badge>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
             Start Selling Your Digital Products Today
           </h1>
-          <p className="text-xl text-muted-foreground mb-8">
+          <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8">
             Join our marketplace and reach thousands of buyers. Simple setup, fair pricing, instant payouts.
           </p>
-          <Button size="lg" className="bg-gradient-primary hover:opacity-90 transition-opacity shadow-glow">
+          <Button 
+            size="lg" 
+            className="bg-gradient-primary hover:opacity-90 transition-opacity shadow-glow w-full sm:w-auto"
+            onClick={() => setShowBecomeSellerDialog(true)}
+          >
             Become a Seller
           </Button>
         </div>
@@ -116,12 +134,17 @@ const Sell = () => {
 
         {/* CTA */}
         <Card className="border-border/50 bg-gradient-primary text-white">
-          <CardContent className="p-12 text-center">
-            <h2 className="text-3xl font-bold mb-4">Ready to Start Selling?</h2>
-            <p className="text-lg text-white/90 mb-8">
+          <CardContent className="p-8 sm:p-12 text-center">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Ready to Start Selling?</h2>
+            <p className="text-base sm:text-lg text-white/90 mb-6 sm:mb-8">
               Join our community of creators and start earning from your digital products
             </p>
-            <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90">
+            <Button 
+              size="lg" 
+              variant="secondary" 
+              className="bg-white text-primary hover:bg-white/90 w-full sm:w-auto"
+              onClick={() => setShowBecomeSellerDialog(true)}
+            >
               Register Now
             </Button>
           </CardContent>
@@ -129,6 +152,7 @@ const Sell = () => {
       </div>
 
       <Footer />
+      <BecomeSellerDialog open={showBecomeSellerDialog} onOpenChange={setShowBecomeSellerDialog} />
     </div>
   );
 };
