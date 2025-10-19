@@ -99,15 +99,15 @@ export const BecomeSellerDialog = ({ open, onOpenChange }: BecomeSellerDialogPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="w-screen h-screen max-w-none rounded-none m-0 translate-x-0 translate-y-0 left-0 top-0 overflow-y-auto p-4 sm:p-8">{" "}
+        <DialogHeader className="max-w-3xl mx-auto">
           <DialogTitle>Become a Seller</DialogTitle>
           <DialogDescription>
             Join our marketplace and start selling your digital products today
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-6 max-w-3xl mx-auto">
           <div className="space-y-3">
             <h3 className="font-semibold text-lg">Seller Benefits</h3>
             <div className="grid gap-3">
