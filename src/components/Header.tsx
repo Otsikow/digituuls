@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
+import logo from "@/assets/logo.png";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -33,9 +34,7 @@ export const Header = () => {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-primary flex items-center justify-center">
-              <span className="text-lg font-bold text-white">M</span>
-            </div>
+            <img src={logo} alt="DigiTuuls" className="h-8 w-auto" />
           </Link>
           
           <nav className="hidden md:flex items-center gap-6">

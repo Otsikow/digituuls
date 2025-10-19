@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Loader2, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import logo from "@/assets/logo.png";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -129,6 +130,10 @@ const Auth = () => {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
+
+        <div className="flex justify-center mb-6 sm:mb-8">
+          <img src={logo} alt="DigiTuuls" className="h-20 w-auto sm:h-24" />
+        </div>
 
         {showForgotPassword ? (
           <Card className="border-border/50 bg-gradient-card">
