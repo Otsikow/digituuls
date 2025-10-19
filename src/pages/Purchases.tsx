@@ -12,11 +12,6 @@ const Purchases = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  if (!user) {
-    navigate("/auth");
-    return null;
-  }
-
   // Mock purchase data - replace with actual data from backend
   const purchases = [
     {
@@ -40,6 +35,11 @@ const Purchases = () => {
       invoiceUrl: "#",
     },
   ];
+
+  if (!user) {
+    navigate("/auth");
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex flex-col">

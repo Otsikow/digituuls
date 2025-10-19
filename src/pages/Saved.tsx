@@ -12,12 +12,7 @@ import { toast } from "sonner";
 const Saved = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-
-  if (!user) {
-    navigate("/auth");
-    return null;
-  }
-
+  
   // Mock saved items data - replace with actual data from backend
   const [savedItems, setSavedItems] = useState([
     {
@@ -53,6 +48,11 @@ const Saved = () => {
     setSavedItems(savedItems.filter((item) => item.id !== id));
     toast.success("Item removed from saved items");
   };
+
+  if (!user) {
+    navigate("/auth");
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex flex-col">

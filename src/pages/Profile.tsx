@@ -17,11 +17,6 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [displayName, setDisplayName] = useState("");
 
-  if (!user) {
-    navigate("/auth");
-    return null;
-  }
-
   const handleSave = () => {
     toast.success("Profile updated successfully");
     setIsEditing(false);
@@ -31,6 +26,11 @@ const Profile = () => {
     await signOut();
     navigate("/");
   };
+
+  if (!user) {
+    navigate("/auth");
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
