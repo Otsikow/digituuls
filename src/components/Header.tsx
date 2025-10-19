@@ -1,9 +1,33 @@
-import { Link } from "react-router-dom";
-import { Search, User, ShoppingBag } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Search, User, Menu } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Header = () => {
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/marketplace?search=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
@@ -28,16 +52,18 @@ export const Header = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="hidden md:flex relative w-64">
+          <form onSubmit={handleSearch} className="hidden md:flex relative w-64">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9 bg-secondary/50 border-border/50 focus-visible:ring-primary"
             />
-          </div>
+          </form>
 
-          <Button variant="ghost" size="icon" className="hover:bg-secondary">
-            <Search className="h-5 w-5 md:hidden" />
+          <Button variant="ghost" size="icon" className="hover:bg-secondary md:hidden">
+            <Search className="h-5 w-5" />
           </Button>
 
           <Link to="/sell">
@@ -46,9 +72,38 @@ export const Header = () => {
             </Button>
           </Link>
 
-          <Button variant="ghost" size="icon" className="hover:bg-secondary">
-            <User className="h-5 w-5" />
-          </Button>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="hover:bg-secondary">
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate("/profile")}>
+                  Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/purchases")}>
+                  My Purchases
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/saved")}>
+                  Saved Items
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSignOut}>
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-secondary"
+              onClick={() => navigate("/auth")}
+            >
+              <User className="h-5 w-5" />
+            </Button>
+          )}
         </div>
       </div>
     </header>
