@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ProductCard } from "@/components/ProductCard";
 import { Search, Sparkles, Shield, TrendingUp, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
+import logo from "@/assets/logo.png";
 
 const Index = () => {
   const featuredProducts = [
@@ -80,6 +81,10 @@ const Index = () => {
         <div className="absolute inset-0 bg-gradient-subtle opacity-50" />
         <div className="container relative py-24 md:py-32">
           <div className="max-w-3xl mx-auto text-center space-y-8">
+            <div className="flex justify-center mb-8">
+              <img src={logo} alt="DigiTuuls" className="h-32 w-auto md:h-40 animate-in fade-in zoom-in duration-700" />
+            </div>
+            
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm text-primary mb-4">
               <Sparkles className="h-4 w-4" />
               <span>Professional Digital Marketplace</span>
