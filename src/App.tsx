@@ -19,6 +19,9 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import SellerTerms from "./pages/SellerTerms";
 import Pricing from "./pages/Pricing";
+import Profile from "./pages/Profile";
+import Purchases from "./pages/Purchases";
+import Saved from "./pages/Saved";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +47,9 @@ const App = () => (
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/seller-terms" element={<SellerTerms />} />
           <Route path="/pricing" element={<Pricing />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/purchases" element={<Purchases />} />
+          <Route path="/saved" element={<Saved />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
