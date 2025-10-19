@@ -81,7 +81,7 @@ const Index = () => {
         <div className="absolute inset-0 bg-gradient-subtle opacity-50" />
         <div className="container relative py-24 md:py-32">
           <div className="max-w-3xl mx-auto text-center space-y-8">
-            <div className="flex justify-center mb-4">
+            <div className="flex justify-center mb-2">
               <img src={logo} alt="DigiTuuls" className="h-48 w-auto md:h-64 animate-in fade-in zoom-in duration-700" />
             </div>
             
