@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { completeReferral, getReferralCode } from '@/lib/referralUtils';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -10,9 +11,18 @@ export const useAuth = () => {
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+        
+        // Complete referral if user was referred and just signed up
+        if (event === 'SIGNED_IN' && session?.user) {
+          const referralCode = getReferralCode();
+          if (referralCode) {
+            await completeReferral(referralCode, session.user.id);
+          }
+        }
+        
         setLoading(false);
       }
     );

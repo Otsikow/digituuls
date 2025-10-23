@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, User, Menu } from "lucide-react";
+import { Search, User, Menu, Bell } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Badge } from "./ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,12 +11,16 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
+import { useReferrals } from "@/hooks/useReferrals";
+import { NotificationCenter } from "./NotificationCenter";
 import logo from "@/assets/logo.png";
 
 export const Header = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { notifications } = useReferrals();
   const [searchQuery, setSearchQuery] = useState("");
+  const [notificationOpen, setNotificationOpen] = useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +33,8 @@ export const Header = () => {
     await signOut();
     navigate("/");
   };
+
+  const unreadNotifications = notifications?.filter(n => !n.read).length || 0;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -65,6 +72,25 @@ export const Header = () => {
             <Search className="h-5 w-5" />
           </Button>
 
+          {user && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-secondary relative"
+              onClick={() => setNotificationOpen(true)}
+            >
+              <Bell className="h-5 w-5" />
+              {unreadNotifications > 0 && (
+                <Badge 
+                  variant="destructive" 
+                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                >
+                  {unreadNotifications}
+                </Badge>
+              )}
+            </Button>
+          )}
+
           <Link to="/sell">
             <Button className="bg-gradient-primary hover:opacity-90 transition-opacity shadow-glow">
               Sell Product
@@ -81,6 +107,9 @@ export const Header = () => {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => navigate("/profile")}>
                   Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/referrals")}>
+                  Referrals & Earnings
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/purchases")}>
                   My Purchases
@@ -105,6 +134,13 @@ export const Header = () => {
           )}
         </div>
       </div>
+      
+      {user && (
+        <NotificationCenter 
+          isOpen={notificationOpen} 
+          onClose={() => setNotificationOpen(false)} 
+        />
+      )}
     </header>
   );
 };
