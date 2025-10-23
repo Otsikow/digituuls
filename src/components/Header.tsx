@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, User, Bell, MoonStar, Sun, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useReferrals } from "@/hooks/useReferrals";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { NotificationCenter } from "./NotificationCenter";
+import { SearchDialog } from "./SearchDialog";
 import logo from "@/assets/logo.png";
 export const Header = () => {
   const navigate = useNavigate();
@@ -29,8 +30,23 @@ export const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileSearchQuery, setMobileSearchQuery] = useState("");
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Keyboard shortcut for search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchDialogOpen(true);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const navigationLinks = [{
     href: "/marketplace",
     label: "Marketplace"
@@ -47,17 +63,21 @@ export const Header = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/marketplace?search=${encodeURIComponent(searchQuery)}`);
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
   };
 
   const handleMobileSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (mobileSearchQuery.trim()) {
-      navigate(`/marketplace?search=${encodeURIComponent(mobileSearchQuery)}`);
+      setSearchDialogOpen(true);
       setMobileSearchOpen(false);
       setMobileSearchQuery('');
     }
+  };
+
+  const handleSearchClick = () => {
+    setSearchDialogOpen(true);
   };
   const handleSignOut = async () => {
     await signOut();
@@ -88,38 +108,28 @@ export const Header = () => {
           {/* Search Bar */}
           <form onSubmit={handleSearch} className="hidden md:flex relative w-64">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Search products..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="border-border/50 bg-secondary/60 pl-9 focus-visible:ring-primary" />
+            <Input 
+              placeholder="Search everything..." 
+              value={searchQuery} 
+              onChange={e => setSearchQuery(e.target.value)} 
+              onClick={handleSearchClick}
+              className="border-border/50 bg-secondary/60 pl-9 pr-16 focus-visible:ring-primary cursor-pointer" 
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-xs text-muted-foreground">
+              <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">⌘</kbd>
+              <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">K</kbd>
+            </div>
           </form>
 
           {/* Mobile Search Button */}
-          <Dialog open={mobileSearchOpen} onOpenChange={setMobileSearchOpen}>
-            <DialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-secondary md:hidden">
-                <Search className="h-5 w-5" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Search Products</DialogTitle>
-                <DialogDescription>
-                  Search for digital products, tools, and toolkits
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleMobileSearch} className="space-y-4">
-                <Input
-                  placeholder="Search products..."
-                  value={mobileSearchQuery}
-                  onChange={(e) => setMobileSearchQuery(e.target.value)}
-                  className="w-full"
-                  autoFocus
-                />
-                <Button type="submit" className="w-full">
-                  <Search className="h-4 w-4 mr-2" />
-                  Search
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="hover:bg-secondary md:hidden"
+            onClick={() => setSearchDialogOpen(true)}
+          >
+            <Search className="h-5 w-5" />
+          </Button>
 
           {/* Theme Toggle */}
           <Button type="button" variant="ghost" size="icon" onClick={toggleTheme} className="hover:bg-secondary" aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}>
@@ -182,10 +192,16 @@ export const Header = () => {
               </DrawerHeader>
 
               <div className="space-y-6 px-4 pb-8">
-                <form onSubmit={handleSearch} className="relative">
+                <div className="relative">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input placeholder="Search products..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="h-11 rounded-xl border-border/60 bg-secondary/60 pl-10 focus-visible:ring-primary" />
-                </form>
+                  <Input 
+                    placeholder="Search everything..." 
+                    value={searchQuery} 
+                    onChange={e => setSearchQuery(e.target.value)} 
+                    onClick={handleSearchClick}
+                    className="h-11 rounded-xl border-border/60 bg-secondary/60 pl-10 focus-visible:ring-primary cursor-pointer" 
+                  />
+                </div>
 
                 <nav className="grid gap-3 text-base font-medium">
                   {navigationLinks.map(link => <DrawerClose asChild key={link.href}>
@@ -235,6 +251,9 @@ export const Header = () => {
 
       {/* Notification Drawer */}
       {user && <NotificationCenter isOpen={notificationOpen} onClose={() => setNotificationOpen(false)} />}
+      
+      {/* Search Dialog */}
+      <SearchDialog open={searchDialogOpen} onOpenChange={setSearchDialogOpen} />
     </header>;
 };
 const ArrowIcon = () => <svg className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
