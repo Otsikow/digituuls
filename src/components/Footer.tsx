@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import logo from "@/assets/logo.png";
 
 export const Footer = () => {
   return (
@@ -7,11 +8,9 @@ export const Footer = () => {
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-primary text-white shadow-glow">
-                <span className="text-lg font-semibold">DT</span>
-              </div>
+              <img src={logo} alt="DigiTuuls" className="h-14 w-auto drop-shadow-md" />
               <div className="text-sm text-muted-foreground">
-                <p className="font-semibold text-foreground">DigiTuuls</p>
+                <p className="font-semibold text-foreground text-base">DigiTuuls</p>
                 <p className="text-xs">Premium marketplace for digital builders.</p>
               </div>
             </div>
