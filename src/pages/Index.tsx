@@ -1,9 +1,10 @@
+import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ProductCard } from "@/components/ProductCard";
 import { QuickSearch } from "@/components/QuickSearch";
+import { GlobalSearch } from "@/components/GlobalSearch";
 import {
   Search,
   Sparkles,
@@ -14,7 +15,6 @@ import {
   BadgeCheck,
   BarChart3,
   Users,
-  Layers,
   Bot,
   Palette,
   LayoutDashboard,
@@ -25,51 +25,7 @@ import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
 
 const Index = () => {
-  const featuredProducts = [
-    {
-      id: "1",
-      title: "SaaS Starter Kit Pro",
-      subtitle: "Complete Next.js boilerplate with auth & payments",
-      price: 14900,
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80",
-      rating: 4.9,
-      reviewCount: 127,
-      isNew: true,
-      category: "SaaS Projects",
-    },
-    {
-      id: "2",
-      title: "AI Content Generator",
-      subtitle: "GPT-powered content creation tool with templates",
-      price: 4900,
-      image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80",
-      rating: 4.8,
-      reviewCount: 89,
-      isBestSeller: true,
-      category: "AI Tools",
-    },
-    {
-      id: "3",
-      title: "Design System Library",
-      subtitle: "200+ components for Figma & React",
-      price: 7900,
-      image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80",
-      rating: 5.0,
-      reviewCount: 234,
-      isBestSeller: true,
-      category: "Design Assets",
-    },
-    {
-      id: "4",
-      title: "Marketing Automation Suite",
-      subtitle: "Email campaigns & analytics dashboard",
-      price: 9900,
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
-      rating: 4.7,
-      reviewCount: 156,
-      category: "Marketing",
-    },
-  ];
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const stats = [
     { value: "8.2k+", label: "Creators", description: "Verified builders sharing premium products" },
@@ -82,42 +38,6 @@ const Index = () => {
     { title: "Growth Marketing Suite", subtitle: "Automated funnels & analytics dashboard", metric: "+312% ROI" },
     { title: "Design System Library", subtitle: "Figma + React components with docs", metric: "200+ assets" },
   ];
-
-  const features = [
-    { icon: Shield, title: "Verified Sellers", description: "All sellers go through KYC verification for your security" },
-    { icon: Zap, title: "Instant Access", description: "Download your purchases immediately after checkout" },
-    { icon: TrendingUp, title: "Quality Products", description: "Curated marketplace with only the best digital tools" },
-  ];
-
-  const categories = [
-    { icon: Bot, title: "AI Automation", description: "Workflows, chatbots, and assistants to accelerate growth" },
-    { icon: LayoutDashboard, title: "Dashboards", description: "Analytics templates and data visualization kits" },
-    { icon: Palette, title: "Design Systems", description: "Complete UI kits with tokens, guidelines, and assets" },
-    { icon: LineChart, title: "Marketing", description: "Funnels, automations, and reporting playbooks" },
-  ];
-
-  const testimonials = [
-    {
-      quote:
-        "DigiTuuls helped us launch a new product line in weeks. The quality of the assets is outstanding and onboarding was seamless.",
-      name: "Clara Jennings",
-      role: "Head of Product, Nova Labs",
-    },
-    {
-      quote:
-        "As a creator, I love how polished the seller experience is. Payments are instant and the analytics give me clarity on performance.",
-      name: "Jamir Patel",
-      role: "Founder, AutomateIQ",
-    },
-    {
-      quote:
-        "Our team saved hundreds of hours using marketplace toolkits. Support is responsive and the curation is top-tier.",
-      name: "Marisol Díaz",
-      role: "Operations Lead, LaunchHub",
-    },
-  ];
-
-  const partnerLogos = ["Product Hunt", "Framer", "Linear", "Webflow", "Mixpanel", "Notion"];
 
   return (
     <div className="min-h-screen bg-background">
@@ -149,7 +69,8 @@ const Index = () => {
                   Discover, launch, and scale with premium digital tools
                 </h1>
                 <p className="max-w-2xl text-base text-muted-foreground sm:text-lg md:text-fluid-subheading">
-                  DigiTuuls curates high-performing SaaS projects, templates, and automations so your next product or campaign is ready in record time.
+                  DigiTuuls curates high-performing SaaS projects, templates, and automations so your next product or
+                  campaign is ready in record time.
                 </p>
               </div>
 
@@ -173,7 +94,9 @@ const Index = () => {
                   <div className="relative w-full flex-1">
                     <QuickSearch
                       placeholder="Search for tools, templates, and workflows..."
-                      className="w-full"
+                      className="h-12 rounded-2xl border-none bg-background/40 pl-12 text-sm focus-visible:ring-primary sm:h-14 sm:text-base cursor-pointer"
+                      onClick={() => setSearchOpen(true)}
+                      readOnly
                     />
                   </div>
                   <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
@@ -208,7 +131,8 @@ const Index = () => {
                   Launch-ready products curated weekly
                 </h3>
                 <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-                  Discover premium projects vetted by our expert team. Every listing includes documentation, onboarding, and support resources.
+                  Discover premium projects vetted by our expert team. Every listing includes documentation,
+                  onboarding, and support resources.
                 </p>
 
                 <div className="mt-6 space-y-3 sm:space-y-4">
@@ -220,7 +144,9 @@ const Index = () => {
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                       <div className="relative flex items-start justify-between gap-4">
                         <div className="space-y-1">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm">{item.metric}</p>
+                          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm">
+                            {item.metric}
+                          </p>
                           <p className="text-base font-medium text-foreground sm:text-lg">{item.title}</p>
                           <p className="text-sm text-muted-foreground">{item.subtitle}</p>
                         </div>
@@ -237,14 +163,18 @@ const Index = () => {
                     <Users className="h-10 w-10 rounded-xl bg-primary/15 p-2 text-primary" />
                     <div>
                       <p className="text-sm font-semibold text-foreground sm:text-base">Growth Network</p>
-                      <p className="text-xs text-muted-foreground sm:text-sm">Collaborate with vetted partners and agencies.</p>
+                      <p className="text-xs text-muted-foreground sm:text-sm">
+                        Collaborate with vetted partners and agencies.
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <BarChart3 className="h-10 w-10 rounded-xl bg-accent/15 p-2 text-accent" />
                     <div>
                       <p className="text-sm font-semibold text-foreground sm:text-base">Actionable Analytics</p>
-                      <p className="text-xs text-muted-foreground sm:text-sm">Track conversions, downloads, and revenue in real time.</p>
+                      <p className="text-xs text-muted-foreground sm:text-sm">
+                        Track conversions, downloads, and revenue in real time.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -254,8 +184,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Remaining sections unchanged */}
+      {/* Footer */}
       <Footer />
+
+      {/* Global Search Dialog */}
+      <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </div>
   );
 };
