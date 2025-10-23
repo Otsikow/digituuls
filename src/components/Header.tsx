@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useReferrals } from "@/hooks/useReferrals";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { NotificationCenter } from "./NotificationCenter";
-import logo from "@/assets/logo.png";
+import { Logo } from "./Logo";
 export const Header = () => {
   const navigate = useNavigate();
   const {
@@ -69,7 +69,7 @@ export const Header = () => {
         {/* Left Section - Logo & Navigation */}
         <div className="flex items-center gap-3 sm:gap-4 lg:gap-6 flex-1 min-w-0">
           <Link to="/" className="flex items-center gap-2 shrink-0">
-            <img src={logo} alt="DigiTuuls" className="h-7 sm:h-8 w-auto" />
+            <Logo variant="header" />
             <div className="hidden sm:flex flex-col leading-tight">
               <span className="text-sm font-semibold text-foreground whitespace-nowrap">DigiTuuls</span>
               
@@ -171,7 +171,7 @@ export const Header = () => {
             <DrawerContent className="border-border/60 bg-background">
               <DrawerHeader className="space-y-4 text-left">
                 <DrawerTitle className="flex items-center gap-3">
-                  <img src={logo} alt="DigiTuuls" className="h-9 w-auto" />
+                  <Logo variant="drawer" />
                   <div className="flex flex-col text-left">
                     <span className="text-base font-semibold text-foreground">DigiTuuls</span>
                     <span className="text-sm text-muted-foreground">

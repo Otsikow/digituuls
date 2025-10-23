@@ -21,7 +21,7 @@ import {
   Quote,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import logo from "@/assets/logo.png";
+import { Logo } from "@/components/Logo";
 
 const Index = () => {
   const featuredProducts = [
@@ -135,7 +135,7 @@ const Index = () => {
             <div className="space-y-10">
               <div className="flex flex-col items-center gap-6 text-center sm:gap-8 md:items-start md:text-left">
                 <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:gap-4 md:flex-col md:items-start">
-                  <img src={logo} alt="DigiTuuls" className="h-14 w-auto drop-shadow-sm sm:h-16" />
+                  <Logo variant="hero" className="drop-shadow-sm" />
                   <span className="text-sm font-medium text-muted-foreground sm:text-base md:text-lg">
                     Your growth partner for digital launches
                   </span>
