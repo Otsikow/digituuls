@@ -11,7 +11,7 @@ export const requestPayout = async (
   try {
     // Check if user has sufficient balance
     const { data: stats, error: statsError } = await supabase
-      .rpc('get_user_total_earnings', { user_id: userId });
+      .rpc('get_user_total_earnings' as any, { user_id: userId });
 
     if (statsError) {
       throw new Error('Failed to fetch user earnings');
@@ -113,14 +113,7 @@ export const processPayout = async (
       .from('referral_payouts')
       .update(updateData)
       .eq('id', payoutId)
-      .select(`
-        id,
-        user_id,
-        amount,
-        method,
-        status,
-        profiles!referral_payouts_user_id_fkey(display_name)
-      `)
+      .select('*')
       .single();
 
     if (payoutError) {

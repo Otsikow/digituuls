@@ -120,30 +120,34 @@ export const useReferrals = () => {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
+      const { data: commissions, error } = await supabase
         .from('referral_commissions')
-        .select(`
-          commission_amount,
-          sale_amount,
-          platform_fee,
-          status,
-          paid_at,
-          referred_user_id,
-          profiles!referral_commissions_referred_user_id_fkey(display_name, username)
-        `)
+        .select('*')
         .eq('referrer_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      const earnings: ReferralEarnings[] = (data || []).map(commission => ({
-        referredUserName: commission.profiles?.display_name || commission.profiles?.username || 'Unknown User',
-        totalSales: commission.sale_amount,
-        platformEarnings: commission.platform_fee,
-        referrerCommission: commission.commission_amount,
-        paymentStatus: commission.status,
-        lastPaymentDate: commission.paid_at,
-      }));
+      // Fetch profiles for referred users
+      const referredUserIds = commissions?.map(c => c.referred_user_id) || [];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, display_name, username')
+        .in('user_id', referredUserIds);
+
+      const profileMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
+
+      const earnings: ReferralEarnings[] = (commissions || []).map(commission => {
+        const profile = profileMap.get(commission.referred_user_id);
+        return {
+          referredUserName: profile?.display_name || profile?.username || 'Unknown User',
+          totalSales: commission.sale_amount,
+          platformEarnings: commission.platform_fee,
+          referrerCommission: commission.commission_amount,
+          paymentStatus: commission.status,
+          lastPaymentDate: commission.paid_at,
+        };
+      });
 
       setReferralEarnings(earnings);
     } catch (error) {

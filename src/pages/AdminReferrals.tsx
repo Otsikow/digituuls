@@ -91,7 +91,7 @@ export default function AdminReferrals() {
 
       // Get top referrers
       const { data: topReferrersData } = await supabase
-        .rpc('get_top_referrers', { limit_count: 10 });
+        .rpc('get_top_referrers' as any, { limit_count: 10 });
 
       const totalReferrals = referralsData?.length || 0;
       const totalCommissions = commissionsData?.reduce((sum, c) => sum + c.commission_amount, 0) || 0;
@@ -112,25 +112,28 @@ export default function AdminReferrals() {
 
   const loadCommissions = async () => {
     try {
-      const { data, error } = await supabase
+      const { data: commissions, error } = await supabase
         .from('referral_commissions')
-        .select(`
-          id,
-          referrer_id,
-          referred_user_id,
-          sale_amount,
-          commission_amount,
-          status,
-          created_at,
-          paid_at,
-          profiles!referral_commissions_referrer_id_fkey(display_name),
-          profiles!referral_commissions_referred_user_id_fkey(display_name)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      const commissionRecords: CommissionRecord[] = (data || []).map(commission => ({
+      // Fetch profiles for all users
+      const userIds = new Set<string>();
+      commissions?.forEach(c => {
+        userIds.add(c.referrer_id);
+        userIds.add(c.referred_user_id);
+      });
+
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, display_name')
+        .in('user_id', Array.from(userIds));
+
+      const profileMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
+
+      const commissionRecords: CommissionRecord[] = (commissions || []).map(commission => ({
         id: commission.id,
         referrer_id: commission.referrer_id,
         referred_user_id: commission.referred_user_id,
@@ -139,8 +142,8 @@ export default function AdminReferrals() {
         status: commission.status,
         created_at: commission.created_at,
         paid_at: commission.paid_at,
-        referrer_name: commission.profiles?.display_name || 'Unknown',
-        referred_name: commission.profiles?.display_name || 'Unknown',
+        referrer_name: profileMap.get(commission.referrer_id)?.display_name || 'Unknown',
+        referred_name: profileMap.get(commission.referred_user_id)?.display_name || 'Unknown',
       }));
 
       setCommissions(commissionRecords);
@@ -151,23 +154,23 @@ export default function AdminReferrals() {
 
   const loadPayouts = async () => {
     try {
-      const { data, error } = await supabase
+      const { data: payouts, error } = await supabase
         .from('referral_payouts')
-        .select(`
-          id,
-          user_id,
-          amount,
-          method,
-          status,
-          created_at,
-          processed_at,
-          profiles!referral_payouts_user_id_fkey(display_name)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      const payoutRecords: PayoutRecord[] = (data || []).map(payout => ({
+      // Fetch profiles for all users
+      const userIds = payouts?.map(p => p.user_id) || [];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, display_name')
+        .in('user_id', userIds);
+
+      const profileMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
+
+      const payoutRecords: PayoutRecord[] = (payouts || []).map(payout => ({
         id: payout.id,
         user_id: payout.user_id,
         amount: payout.amount,
@@ -175,7 +178,7 @@ export default function AdminReferrals() {
         status: payout.status,
         created_at: payout.created_at,
         processed_at: payout.processed_at,
-        user_name: payout.profiles?.display_name || 'Unknown',
+        user_name: profileMap.get(payout.user_id)?.display_name || 'Unknown',
       }));
 
       setPayouts(payoutRecords);
@@ -184,13 +187,13 @@ export default function AdminReferrals() {
     }
   };
 
-  const updateCommissionStatus = async (commissionId: string, status: string) => {
+  const updateCommissionStatus = async (commissionId: string, newStatus: 'pending' | 'confirmed' | 'paid' | 'cancelled') => {
     try {
       const { error } = await supabase
         .from('referral_commissions')
         .update({ 
-          status,
-          ...(status === 'paid' ? { paid_at: new Date().toISOString() } : {})
+          status: newStatus,
+          ...(newStatus === 'paid' ? { paid_at: new Date().toISOString() } : {})
         })
         .eq('id', commissionId);
 
@@ -212,13 +215,13 @@ export default function AdminReferrals() {
     }
   };
 
-  const updatePayoutStatus = async (payoutId: string, status: string) => {
+  const updatePayoutStatus = async (payoutId: string, newStatus: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled') => {
     try {
       const { error } = await supabase
         .from('referral_payouts')
         .update({ 
-          status,
-          ...(status === 'completed' ? { 
+          status: newStatus,
+          ...(newStatus === 'completed' ? { 
             processed_at: new Date().toISOString(),
             completed_at: new Date().toISOString()
           } : {})
