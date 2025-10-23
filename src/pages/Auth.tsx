@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Loader2, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { completeReferral, getReferralCode } from "@/lib/referralUtils";
 import logo from "@/assets/logo.png";
 
 const Auth = () => {
@@ -28,6 +29,11 @@ const Auth = () => {
 
   useEffect(() => {
     if (user) {
+      // Complete referral if user was referred
+      const referralCode = getReferralCode();
+      if (referralCode) {
+        completeReferral(referralCode, user.id);
+      }
       navigate("/");
     }
   }, [user, navigate]);
