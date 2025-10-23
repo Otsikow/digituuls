@@ -134,9 +134,9 @@ const Index = () => {
             {/* Hero Left */}
             <div className="space-y-10">
               <div className="flex flex-col items-center gap-6 text-center sm:gap-8 md:items-start md:text-left">
-                <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:gap-4 md:flex-col md:items-start">
-                  <img src={logo} alt="DigiTuuls" className="h-14 w-auto drop-shadow-sm sm:h-16" />
-                  <span className="text-sm font-medium text-muted-foreground sm:text-base md:text-lg">
+                <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6 md:flex-col md:items-start">
+                  <img src={logo} alt="DigiTuuls" className="h-20 w-auto drop-shadow-lg sm:h-24 md:h-28" />
+                  <span className="text-base font-medium text-muted-foreground sm:text-lg md:text-xl">
                     Your growth partner for digital launches
                   </span>
                 </div>

@@ -137,8 +137,8 @@ const Auth = () => {
           Back
         </Button>
 
-        <div className="flex justify-center mb-6 sm:mb-8">
-          <img src={logo} alt="DigiTuuls" className="h-20 w-auto sm:h-24" />
+        <div className="flex justify-center mb-8 sm:mb-10">
+          <img src={logo} alt="DigiTuuls" className="h-24 w-auto drop-shadow-lg sm:h-28 md:h-32" />
         </div>
 
         {showForgotPassword ? (

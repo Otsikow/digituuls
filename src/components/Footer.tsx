@@ -6,13 +6,13 @@ export const Footer = () => {
       <div className="container space-y-12 py-12">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-primary text-white shadow-glow">
-                <span className="text-lg font-semibold">DT</span>
+            <div className="flex items-center gap-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-primary text-white shadow-glow">
+                <span className="text-2xl font-bold">DT</span>
               </div>
               <div className="text-sm text-muted-foreground">
-                <p className="font-semibold text-foreground">DigiTuuls</p>
-                <p className="text-xs">Premium marketplace for digital builders.</p>
+                <p className="text-xl font-bold text-foreground">DigiTuuls</p>
+                <p className="text-sm">Premium marketplace for digital builders.</p>
               </div>
             </div>
             <p className="text-sm text-muted-foreground">
