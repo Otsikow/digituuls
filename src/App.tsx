@@ -3,6 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+// Pages
 import Index from "./pages/Index";
 import Marketplace from "./pages/Marketplace";
 import ProductDetail from "./pages/ProductDetail";
@@ -11,7 +13,6 @@ import Sell from "./pages/Sell";
 import Admin from "./pages/Admin";
 import Tools from "./pages/Tools";
 import Toolkits from "./pages/Toolkits";
-import NotFound from "./pages/NotFound";
 import About from "./pages/About";
 import Features from "./pages/Features";
 import Contact from "./pages/Contact";
@@ -22,8 +23,12 @@ import Pricing from "./pages/Pricing";
 import Profile from "./pages/Profile";
 import Purchases from "./pages/Purchases";
 import Saved from "./pages/Saved";
+import NotFound from "./pages/NotFound";
+
+// Referral Pages
 import Referrals from "./pages/Referrals";
 import ReferralLanding from "./pages/ReferralLanding";
+import ReferralAccount from "./pages/ReferralAccount";
 import AdminReferrals from "./pages/AdminReferrals";
 
 const queryClient = new QueryClient();
@@ -35,6 +40,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          {/* Main Routes */}
           <Route path="/" element={<Index />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/product/:id" element={<ProductDetail />} />
@@ -53,10 +59,14 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/purchases" element={<Purchases />} />
           <Route path="/saved" element={<Saved />} />
+
+          {/* Referral Routes */}
           <Route path="/referrals" element={<Referrals />} />
           <Route path="/ref/:referralCode" element={<ReferralLanding />} />
+          <Route path="/account/referrals" element={<ReferralAccount />} />
           <Route path="/admin/referrals" element={<AdminReferrals />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+
+          {/* Fallback */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

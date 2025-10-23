@@ -143,6 +143,9 @@ export const Header = () => {
                 <DropdownMenuItem onClick={() => navigate("/purchases")}>
                   My Purchases
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/account/referrals")}>
+                  Referrals & Earnings
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/saved")}>
                   Saved Items
                 </DropdownMenuItem>

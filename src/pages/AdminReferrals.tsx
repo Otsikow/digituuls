@@ -1,32 +1,62 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/hooks/use-toast';
-import { 
-  Search, 
-  Download, 
-  Filter, 
-  DollarSign, 
-  Users, 
-  TrendingUp, 
-  AlertTriangle,
-  CheckCircle,
+import { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Download,
+  DollarSign,
+  Users,
+  TrendingUp,
   Clock,
-  Eye
-} from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { formatCurrency, getStatusDisplay, getPayoutMethodDisplayName } from '@/lib/referralUtils';
+  CheckCircle,
+  Eye,
+} from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  formatCurrency,
+  getStatusDisplay,
+  getPayoutMethodDisplayName,
+} from "@/lib/referralUtils";
 
 interface AdminReferralStats {
   totalReferrals: number;
+  totalSales: number;
+  platformFees: number;
   totalCommissions: number;
+  pendingCommissions: number;
+  readyCommissions: number;
   totalPayouts: number;
   pendingPayouts: number;
   topReferrers: Array<{
@@ -67,54 +97,77 @@ export default function AdminReferrals() {
   const [commissions, setCommissions] = useState<CommissionRecord[]>([]);
   const [payouts, setPayouts] = useState<PayoutRecord[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [selectedPayout, setSelectedPayout] = useState<PayoutRecord | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [selectedPayout, setSelectedPayout] = useState<PayoutRecord | null>(
+    null
+  );
   const [payoutDialogOpen, setPayoutDialogOpen] = useState(false);
 
+  // Fetch statistics overview
   const loadStats = async () => {
     try {
-      // Get total referrals
-      const { data: referralsData } = await supabase
-        .from('referrals')
-        .select('id, status');
-
-      // Get total commissions
+      const { data: rels } = await supabase.from("referral_relations").select("id");
       const { data: commissionsData } = await supabase
-        .from('referral_commissions')
-        .select('commission_amount, status');
-
-      // Get total payouts
+        .from("referral_commissions")
+        .select("commission_amount, sale_amount, platform_fee_amount, status");
       const { data: payoutsData } = await supabase
-        .from('referral_payouts')
-        .select('amount, status');
+        .from("referral_payouts")
+        .select("amount, status");
+      const { data: topReferrersData } = await supabase.rpc("get_top_referrers", {
+        limit_count: 10,
+      });
 
-      // Get top referrers
-      const { data: topReferrersData } = await supabase
-        .rpc('get_top_referrers', { limit_count: 10 });
-
-      const totalReferrals = referralsData?.length || 0;
-      const totalCommissions = commissionsData?.reduce((sum, c) => sum + c.commission_amount, 0) || 0;
-      const totalPayouts = payoutsData?.filter(p => p.status === 'completed').reduce((sum, p) => sum + p.amount, 0) || 0;
-      const pendingPayouts = payoutsData?.filter(p => p.status === 'pending').reduce((sum, p) => sum + p.amount, 0) || 0;
+      const totalSales =
+        commissionsData?.reduce((sum, c) => sum + (c.sale_amount ?? 0), 0) || 0;
+      const platformFees =
+        commissionsData?.reduce((sum, c) => sum + (c.platform_fee_amount ?? 0), 0) || 0;
+      const totalCommissions =
+        commissionsData?.reduce((sum, c) => sum + (c.commission_amount ?? 0), 0) || 0;
+      const pendingCommissions =
+        commissionsData?.filter((c) => c.status === "pending").reduce(
+          (sum, c) => sum + (c.commission_amount ?? 0),
+          0
+        ) || 0;
+      const readyCommissions =
+        commissionsData?.filter((c) => c.status === "ready").reduce(
+          (sum, c) => sum + (c.commission_amount ?? 0),
+          0
+        ) || 0;
+      const totalPayouts =
+        payoutsData?.filter((p) => p.status === "completed").reduce(
+          (sum, p) => sum + (p.amount ?? 0),
+          0
+        ) || 0;
+      const pendingPayouts =
+        payoutsData?.filter((p) => p.status === "pending").reduce(
+          (sum, p) => sum + (p.amount ?? 0),
+          0
+        ) || 0;
 
       setStats({
-        totalReferrals,
+        totalReferrals: rels?.length || 0,
+        totalSales,
+        platformFees,
         totalCommissions,
+        pendingCommissions,
+        readyCommissions,
         totalPayouts,
         pendingPayouts,
         topReferrers: topReferrersData || [],
       });
     } catch (error) {
-      console.error('Error loading stats:', error);
+      console.error("Error loading stats:", error);
     }
   };
 
+  // Fetch commissions
   const loadCommissions = async () => {
     try {
       const { data, error } = await supabase
-        .from('referral_commissions')
-        .select(`
+        .from("referral_commissions")
+        .select(
+          `
           id,
           referrer_id,
           referred_user_id,
@@ -125,35 +178,40 @@ export default function AdminReferrals() {
           paid_at,
           profiles!referral_commissions_referrer_id_fkey(display_name),
           profiles!referral_commissions_referred_user_id_fkey(display_name)
-        `)
-        .order('created_at', { ascending: false });
+        `
+        )
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
 
-      const commissionRecords: CommissionRecord[] = (data || []).map(commission => ({
-        id: commission.id,
-        referrer_id: commission.referrer_id,
-        referred_user_id: commission.referred_user_id,
-        sale_amount: commission.sale_amount,
-        commission_amount: commission.commission_amount,
-        status: commission.status,
-        created_at: commission.created_at,
-        paid_at: commission.paid_at,
-        referrer_name: commission.profiles?.display_name || 'Unknown',
-        referred_name: commission.profiles?.display_name || 'Unknown',
+      const commissionRecords: CommissionRecord[] = (data || []).map((c) => ({
+        id: c.id,
+        referrer_id: c.referrer_id,
+        referred_user_id: c.referred_user_id,
+        sale_amount: c.sale_amount,
+        commission_amount: c.commission_amount,
+        status: c.status,
+        created_at: c.created_at,
+        paid_at: c.paid_at,
+        referrer_name:
+          c.profiles?.[0]?.display_name || c.profiles?.display_name || "Unknown",
+        referred_name:
+          c.profiles?.[1]?.display_name || c.profiles?.display_name || "Unknown",
       }));
 
       setCommissions(commissionRecords);
     } catch (error) {
-      console.error('Error loading commissions:', error);
+      console.error("Error loading commissions:", error);
     }
   };
 
+  // Fetch payouts
   const loadPayouts = async () => {
     try {
       const { data, error } = await supabase
-        .from('referral_payouts')
-        .select(`
+        .from("referral_payouts")
+        .select(
+          `
           id,
           user_id,
           amount,
@@ -162,158 +220,136 @@ export default function AdminReferrals() {
           created_at,
           processed_at,
           profiles!referral_payouts_user_id_fkey(display_name)
-        `)
-        .order('created_at', { ascending: false });
+        `
+        )
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
 
-      const payoutRecords: PayoutRecord[] = (data || []).map(payout => ({
-        id: payout.id,
-        user_id: payout.user_id,
-        amount: payout.amount,
-        method: payout.method,
-        status: payout.status,
-        created_at: payout.created_at,
-        processed_at: payout.processed_at,
-        user_name: payout.profiles?.display_name || 'Unknown',
+      const payoutRecords: PayoutRecord[] = (data || []).map((p) => ({
+        id: p.id,
+        user_id: p.user_id,
+        amount: p.amount,
+        method: p.method,
+        status: p.status,
+        created_at: p.created_at,
+        processed_at: p.processed_at,
+        user_name: p.profiles?.display_name || "Unknown",
       }));
 
       setPayouts(payoutRecords);
     } catch (error) {
-      console.error('Error loading payouts:', error);
+      console.error("Error loading payouts:", error);
     }
   };
 
   const updateCommissionStatus = async (commissionId: string, status: string) => {
     try {
-      const { error } = await supabase
-        .from('referral_commissions')
-        .update({ 
+      await supabase
+        .from("referral_commissions")
+        .update({
           status,
-          ...(status === 'paid' ? { paid_at: new Date().toISOString() } : {})
+          ...(status === "paid" ? { paid_at: new Date().toISOString() } : {}),
         })
-        .eq('id', commissionId);
-
-      if (error) throw error;
+        .eq("id", commissionId);
 
       toast({
-        title: 'Status updated',
-        description: 'Commission status has been updated successfully.',
+        title: "Commission updated",
+        description: "Commission status updated successfully.",
       });
 
       loadCommissions();
+      loadStats();
     } catch (error) {
-      console.error('Error updating commission status:', error);
+      console.error("Error updating commission status:", error);
       toast({
-        title: 'Update failed',
-        description: 'Could not update commission status.',
-        variant: 'destructive',
+        title: "Update failed",
+        description: "Could not update commission status.",
+        variant: "destructive",
       });
     }
   };
 
   const updatePayoutStatus = async (payoutId: string, status: string) => {
     try {
-      const { error } = await supabase
-        .from('referral_payouts')
-        .update({ 
+      await supabase
+        .from("referral_payouts")
+        .update({
           status,
-          ...(status === 'completed' ? { 
-            processed_at: new Date().toISOString(),
-            completed_at: new Date().toISOString()
-          } : {})
+          ...(status === "completed"
+            ? { processed_at: new Date().toISOString() }
+            : {}),
         })
-        .eq('id', payoutId);
-
-      if (error) throw error;
+        .eq("id", payoutId);
 
       toast({
-        title: 'Status updated',
-        description: 'Payout status has been updated successfully.',
+        title: "Payout updated",
+        description: "Payout status updated successfully.",
       });
 
       loadPayouts();
+      loadStats();
       setPayoutDialogOpen(false);
     } catch (error) {
-      console.error('Error updating payout status:', error);
+      console.error("Error updating payout:", error);
       toast({
-        title: 'Update failed',
-        description: 'Could not update payout status.',
-        variant: 'destructive',
+        title: "Update failed",
+        description: "Could not update payout status.",
+        variant: "destructive",
       });
     }
   };
 
-  const exportData = async (type: 'commissions' | 'payouts') => {
-    try {
-      const data = type === 'commissions' ? commissions : payouts;
-      const csvContent = convertToCSV(data);
-      const blob = new Blob([csvContent], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${type}-${new Date().toISOString().split('T')[0]}.csv`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Error exporting data:', error);
-    }
-  };
+  const exportData = (type: "commissions" | "payouts") => {
+    const data = type === "commissions" ? commissions : payouts;
+    if (data.length === 0) return;
 
-  const convertToCSV = (data: any[]) => {
-    if (data.length === 0) return '';
-    
     const headers = Object.keys(data[0]);
-    const csvRows = [
-      headers.join(','),
-      ...data.map(row => 
-        headers.map(header => 
-          JSON.stringify(row[header] || '')
-        ).join(',')
-      )
-    ];
-    
-    return csvRows.join('\n');
+    const csv = [
+      headers.join(","),
+      ...data.map((row) =>
+        headers.map((h) => JSON.stringify(row[h] ?? "")).join(",")
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${type}-${new Date().toISOString().split("T")[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
   };
 
   useEffect(() => {
-    const loadData = async () => {
+    const load = async () => {
       setLoading(true);
-      await Promise.all([
-        loadStats(),
-        loadCommissions(),
-        loadPayouts(),
-      ]);
+      await Promise.all([loadStats(), loadCommissions(), loadPayouts()]);
       setLoading(false);
     };
-
-    loadData();
+    load();
   }, []);
 
-  const filteredCommissions = commissions.filter(commission => {
-    const matchesSearch = commission.referrer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         commission.referred_name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || commission.status === statusFilter;
+  const filteredCommissions = commissions.filter((c) => {
+    const matchesSearch =
+      c.referrer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      c.referred_name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "all" || c.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
-  const filteredPayouts = payouts.filter(payout => {
-    const matchesSearch = payout.user_name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || payout.status === statusFilter;
+  const filteredPayouts = payouts.filter((p) => {
+    const matchesSearch = p.user_name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "all" || p.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-200 rounded"></div>
-            ))}
-          </div>
-        </div>
+      <div className="container mx-auto px-4 py-8 text-center text-muted-foreground">
+        Loading referral data...
       </div>
     );
   }
@@ -321,95 +357,77 @@ export default function AdminReferrals() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Referral Management</h1>
-        <p className="text-gray-600">Monitor and manage the referral system</p>
+        <h1 className="text-3xl font-bold mb-2">Referral Management</h1>
+        <p className="text-muted-foreground">
+          Track commissions, payouts, and referral earnings (30% of 10%).
+        </p>
       </div>
 
-      {/* Stats Overview */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Referrals</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+            <CardHeader>
+              <CardTitle className="text-sm">Total Referrals</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalReferrals}</div>
-            </CardContent>
+            <CardContent>{stats.totalReferrals}</CardContent>
           </Card>
-
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Commissions</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardHeader>
+              <CardTitle className="text-sm">Total Sales</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(stats.totalCommissions)}</div>
-            </CardContent>
+            <CardContent>{formatCurrency(stats.totalSales)}</CardContent>
           </Card>
-
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Payouts</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardHeader>
+              <CardTitle className="text-sm">Platform 10%</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(stats.totalPayouts)}</div>
-            </CardContent>
+            <CardContent>{formatCurrency(stats.platformFees)}</CardContent>
           </Card>
-
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending Payouts</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
+            <CardHeader>
+              <CardTitle className="text-sm">Commissions (30% of 10%)</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(stats.pendingPayouts)}</div>
-            </CardContent>
+            <CardContent>{formatCurrency(stats.totalCommissions)}</CardContent>
           </Card>
         </div>
       )}
 
-      <Tabs defaultValue="commissions" className="space-y-6">
+      <Tabs defaultValue="commissions">
         <TabsList>
           <TabsTrigger value="commissions">Commissions</TabsTrigger>
           <TabsTrigger value="payouts">Payouts</TabsTrigger>
           <TabsTrigger value="referrers">Top Referrers</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="commissions" className="space-y-6">
+        <TabsContent value="commissions">
           <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Commission Management</CardTitle>
-                  <CardDescription>Review and manage referral commissions</CardDescription>
-                </div>
-                <Button onClick={() => exportData('commissions')} variant="outline">
-                  <Download className="w-4 h-4 mr-2" />
-                  Export
-                </Button>
+            <CardHeader className="flex justify-between items-center">
+              <div>
+                <CardTitle>Commission Management</CardTitle>
+                <CardDescription>
+                  Manage and approve referral commissions
+                </CardDescription>
               </div>
+              <Button variant="outline" onClick={() => exportData("commissions")}>
+                <Download className="w-4 h-4 mr-2" /> Export
+              </Button>
             </CardHeader>
             <CardContent>
               <div className="flex gap-4 mb-4">
-                <div className="flex-1">
-                  <Input
-                    placeholder="Search by referrer or referred user..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
+                <Input
+                  placeholder="Search referrer or referred..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="all">All</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="confirmed">Confirmed</SelectItem>
+                    <SelectItem value="ready">Ready</SelectItem>
                     <SelectItem value="paid">Paid</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -418,214 +436,46 @@ export default function AdminReferrals() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Referrer</TableHead>
-                    <TableHead>Referred User</TableHead>
-                    <TableHead>Sale Amount</TableHead>
-                    <TableHead>Commission</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredCommissions.map((commission) => {
-                    const statusDisplay = getStatusDisplay(commission.status);
-                    return (
-                      <TableRow key={commission.id}>
-                        <TableCell className="font-medium">
-                          {commission.referrer_name}
-                        </TableCell>
-                        <TableCell>{commission.referred_name}</TableCell>
-                        <TableCell>{formatCurrency(commission.sale_amount)}</TableCell>
-                        <TableCell className="font-medium">
-                          {formatCurrency(commission.commission_amount)}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={statusDisplay.color === 'green' ? 'default' : 'secondary'}>
-                            {statusDisplay.label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {new Date(commission.created_at).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            {commission.status === 'pending' && (
-                              <>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => updateCommissionStatus(commission.id, 'confirmed')}
-                                >
-                                  <CheckCircle className="w-4 h-4 mr-1" />
-                                  Confirm
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => updateCommissionStatus(commission.id, 'paid')}
-                                >
-                                  <DollarSign className="w-4 h-4 mr-1" />
-                                  Pay
-                                </Button>
-                              </>
-                            )}
-                            {commission.status === 'confirmed' && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => updateCommissionStatus(commission.id, 'paid')}
-                              >
-                                <DollarSign className="w-4 h-4 mr-1" />
-                                Pay
-                              </Button>
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="payouts" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Payout Management</CardTitle>
-                  <CardDescription>Process and manage user payouts</CardDescription>
-                </div>
-                <Button onClick={() => exportData('payouts')} variant="outline">
-                  <Download className="w-4 h-4 mr-2" />
-                  Export
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-4 mb-4">
-                <div className="flex-1">
-                  <Input
-                    placeholder="Search by user name..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="processing">Processing</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="failed">Failed</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>User</TableHead>
+                    <TableHead>Referred</TableHead>
                     <TableHead>Amount</TableHead>
-                    <TableHead>Method</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Requested</TableHead>
-                    <TableHead>Processed</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredPayouts.map((payout) => {
-                    const statusDisplay = getStatusDisplay(payout.status);
-                    return (
-                      <TableRow key={payout.id}>
-                        <TableCell className="font-medium">
-                          {payout.user_name}
-                        </TableCell>
-                        <TableCell>{formatCurrency(payout.amount)}</TableCell>
-                        <TableCell>
-                          {getPayoutMethodDisplayName(payout.method)}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={statusDisplay.color === 'green' ? 'default' : 'secondary'}>
-                            {statusDisplay.label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {new Date(payout.created_at).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          {payout.processed_at 
-                            ? new Date(payout.processed_at).toLocaleDateString()
-                            : '-'
-                          }
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
+                  {filteredCommissions.map((c) => (
+                    <TableRow key={c.id}>
+                      <TableCell>{c.referrer_name}</TableCell>
+                      <TableCell>{c.referred_name}</TableCell>
+                      <TableCell>{formatCurrency(c.commission_amount)}</TableCell>
+                      <TableCell>
+                        <Badge>{c.status}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          {c.status === "pending" && (
                             <Button
                               size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                setSelectedPayout(payout);
-                                setPayoutDialogOpen(true);
-                              }}
+                              onClick={() =>
+                                updateCommissionStatus(c.id, "ready")
+                              }
                             >
-                              <Eye className="w-4 h-4 mr-1" />
-                              View
+                              <CheckCircle className="w-4 h-4 mr-1" />
+                              Approve
                             </Button>
-                            {payout.status === 'pending' && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => updatePayoutStatus(payout.id, 'completed')}
-                              >
-                                <CheckCircle className="w-4 h-4 mr-1" />
-                                Complete
-                              </Button>
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="referrers" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Top Referrers</CardTitle>
-              <CardDescription>Users with the highest referral earnings</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Rank</TableHead>
-                    <TableHead>User</TableHead>
-                    <TableHead>Referrals</TableHead>
-                    <TableHead>Total Earnings</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {stats?.topReferrers.map((referrer, index) => (
-                    <TableRow key={referrer.user_id}>
-                      <TableCell className="font-medium">#{index + 1}</TableCell>
-                      <TableCell className="font-medium">
-                        {referrer.display_name}
-                      </TableCell>
-                      <TableCell>{referrer.referral_count}</TableCell>
-                      <TableCell className="font-medium">
-                        {formatCurrency(referrer.total_earnings)}
+                          )}
+                          {c.status === "ready" && (
+                            <Button
+                              size="sm"
+                              onClick={() =>
+                                updateCommissionStatus(c.id, "paid")
+                              }
+                            >
+                              <DollarSign className="w-4 h-4 mr-1" />
+                              Mark Paid
+                            </Button>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -634,69 +484,70 @@ export default function AdminReferrals() {
             </CardContent>
           </Card>
         </TabsContent>
-      </Tabs>
 
-      {/* Payout Details Dialog */}
-      <Dialog open={payoutDialogOpen} onOpenChange={setPayoutDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Payout Details</DialogTitle>
-            <DialogDescription>
-              Review payout information and update status
-            </DialogDescription>
-          </DialogHeader>
-          {selectedPayout && (
-            <div className="space-y-4">
+        <TabsContent value="payouts">
+          <Card>
+            <CardHeader className="flex justify-between items-center">
               <div>
-                <Label>User</Label>
-                <p className="font-medium">{selectedPayout.user_name}</p>
+                <CardTitle>Payout Requests</CardTitle>
+                <CardDescription>Approve and mark completed payouts</CardDescription>
               </div>
-              <div>
-                <Label>Amount</Label>
-                <p className="font-medium">{formatCurrency(selectedPayout.amount)}</p>
-              </div>
-              <div>
-                <Label>Method</Label>
-                <p className="font-medium">{getPayoutMethodDisplayName(selectedPayout.method)}</p>
-              </div>
-              <div>
-                <Label>Status</Label>
-                <Badge variant="secondary">
-                  {getStatusDisplay(selectedPayout.status).label}
-                </Badge>
-              </div>
-              <div>
-                <Label>Requested</Label>
-                <p>{new Date(selectedPayout.created_at).toLocaleString()}</p>
-              </div>
-              {selectedPayout.processed_at && (
-                <div>
-                  <Label>Processed</Label>
-                  <p>{new Date(selectedPayout.processed_at).toLocaleString()}</p>
-                </div>
-              )}
-              <div className="flex gap-2 pt-4">
-                {selectedPayout.status === 'pending' && (
-                  <Button
-                    onClick={() => updatePayoutStatus(selectedPayout.id, 'completed')}
-                    className="flex-1"
-                  >
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Mark as Completed
-                  </Button>
-                )}
-                <Button
-                  variant="outline"
-                  onClick={() => setPayoutDialogOpen(false)}
-                  className="flex-1"
-                >
-                  Close
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-}
+              <Button variant="outline" onClick={() => exportData("payouts")}>
+                <Download className="w-4 h-4 mr-2" /> Export
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>User</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Method</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredPayouts.map((p) => (
+                    <TableRow key={p.id}>
+                      <TableCell>{p.user_name}</TableCell>
+                      <TableCell>{formatCurrency(p.amount)}</TableCell>
+                      <TableCell>
+                        {getPayoutMethodDisplayName(p.method)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge>{p.status}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedPayout(p);
+                              setPayoutDialogOpen(true);
+                            }}
+                          >
+                            <Eye className="w-4 h-4 mr-1" /> View
+                          </Button>
+                          {p.status === "pending" && (
+                            <Button
+                              size="sm"
+                              onClick={() =>
+                                updatePayoutStatus(p.id, "completed")
+                              }
+                            >
+                              <CheckCircle className="w-4 h-4 mr-1" />
+                              Complete
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+          <Dialog open={payoutDialogOpen} onOpenChange={set

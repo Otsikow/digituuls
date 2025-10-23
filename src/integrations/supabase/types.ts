@@ -14,6 +14,147 @@ export type Database = {
   }
   public: {
     Tables: {
+      referral_codes: {
+        Row: {
+          id: string
+          referrer_id: string
+          code: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          referrer_id: string
+          code: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          referrer_id?: string
+          code?: string
+          created_at?: string | null
+        }
+        Relationships: []
+      }
+      referral_clicks: {
+        Row: {
+          id: string
+          code: string
+          user_agent: string | null
+          utm: Json | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          code: string
+          user_agent?: string | null
+          utm?: Json | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          code?: string
+          user_agent?: string | null
+          utm?: Json | null
+          created_at?: string | null
+        }
+        Relationships: []
+      }
+      referral_relations: {
+        Row: {
+          id: string
+          referrer_id: string
+          referred_id: string
+          code: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          referrer_id?: string
+          referred_id: string
+          code: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          referrer_id?: string
+          referred_id?: string
+          code?: string
+          created_at?: string | null
+        }
+        Relationships: []
+      }
+      referral_commissions: {
+        Row: {
+          id: string
+          referrer_id: string
+          referred_id: string
+          purchase_id: string
+          sale_amount: number
+          platform_fee_amount: number
+          commission_amount: number
+          status: string
+          created_at: string | null
+          paid_at: string | null
+        }
+        Insert: {
+          id?: string
+          referrer_id: string
+          referred_id: string
+          purchase_id: string
+          sale_amount: number
+          platform_fee_amount: number
+          commission_amount: number
+          status?: string
+          created_at?: string | null
+          paid_at?: string | null
+        }
+        Update: {
+          id?: string
+          referrer_id?: string
+          referred_id?: string
+          purchase_id?: string
+          sale_amount?: number
+          platform_fee_amount?: number
+          commission_amount?: number
+          status?: string
+          created_at?: string | null
+          paid_at?: string | null
+        }
+        Relationships: []
+      }
+      referral_payouts: {
+        Row: {
+          id: string
+          referrer_id: string
+          amount: number
+          method: string
+          status: string
+          requested_at: string | null
+          processed_at: string | null
+          metadata: Json | null
+        }
+        Insert: {
+          id?: string
+          referrer_id: string
+          amount: number
+          method?: string
+          status?: string
+          requested_at?: string | null
+          processed_at?: string | null
+          metadata?: Json | null
+        }
+        Update: {
+          id?: string
+          referrer_id?: string
+          amount?: number
+          method?: string
+          status?: string
+          requested_at?: string | null
+          processed_at?: string | null
+          metadata?: Json | null
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string | null
