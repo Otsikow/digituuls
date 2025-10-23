@@ -4,6 +4,7 @@ import { Search, User, Bell, MoonStar, Sun, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { Drawer, DrawerClose, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "./ui/drawer";
 import { Separator } from "./ui/separator";
@@ -26,6 +27,8 @@ export const Header = () => {
     isDark
   } = useThemeMode();
   const [searchQuery, setSearchQuery] = useState("");
+  const [mobileSearchQuery, setMobileSearchQuery] = useState("");
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigationLinks = [{
@@ -45,6 +48,15 @@ export const Header = () => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/marketplace?search=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
+  const handleMobileSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (mobileSearchQuery.trim()) {
+      navigate(`/marketplace?search=${encodeURIComponent(mobileSearchQuery)}`);
+      setMobileSearchOpen(false);
+      setMobileSearchQuery('');
     }
   };
   const handleSignOut = async () => {
@@ -80,9 +92,34 @@ export const Header = () => {
           </form>
 
           {/* Mobile Search Button */}
-          <Button variant="ghost" size="icon" className="hover:bg-secondary md:hidden">
-            <Search className="h-5 w-5" />
-          </Button>
+          <Dialog open={mobileSearchOpen} onOpenChange={setMobileSearchOpen}>
+            <DialogTrigger asChild>
+              <Button variant="ghost" size="icon" className="hover:bg-secondary md:hidden">
+                <Search className="h-5 w-5" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Search Products</DialogTitle>
+                <DialogDescription>
+                  Search for digital products, tools, and toolkits
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleMobileSearch} className="space-y-4">
+                <Input
+                  placeholder="Search products..."
+                  value={mobileSearchQuery}
+                  onChange={(e) => setMobileSearchQuery(e.target.value)}
+                  className="w-full"
+                  autoFocus
+                />
+                <Button type="submit" className="w-full">
+                  <Search className="h-4 w-4 mr-2" />
+                  Search
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
 
           {/* Theme Toggle */}
           <Button type="button" variant="ghost" size="icon" onClick={toggleTheme} className="hover:bg-secondary" aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}>
