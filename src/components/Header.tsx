@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, User, Bell, MoonStar, Sun, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useReferrals } from "@/hooks/useReferrals";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { NotificationCenter } from "./NotificationCenter";
+import { GlobalSearch } from "./GlobalSearch";
 import logo from "@/assets/logo.png";
 export const Header = () => {
   const navigate = useNavigate();
@@ -26,9 +27,7 @@ export const Header = () => {
     toggleTheme,
     isDark
   } = useThemeMode();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [mobileSearchQuery, setMobileSearchQuery] = useState("");
-  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigationLinks = [{
@@ -44,21 +43,18 @@ export const Header = () => {
     href: "/features",
     label: "Features"
   }];
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/marketplace?search=${encodeURIComponent(searchQuery)}`);
-    }
-  };
+  // Keyboard shortcut for search (Cmd/Ctrl + K)
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setSearchOpen((open) => !open);
+      }
+    };
 
-  const handleMobileSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (mobileSearchQuery.trim()) {
-      navigate(`/marketplace?search=${encodeURIComponent(mobileSearchQuery)}`);
-      setMobileSearchOpen(false);
-      setMobileSearchQuery('');
-    }
-  };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
@@ -85,41 +81,28 @@ export const Header = () => {
 
         {/* Right Section - Search, Theme Toggle, Notifications, Profile */}
         <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
-          {/* Search Bar */}
-          <form onSubmit={handleSearch} className="hidden md:flex relative w-64">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Search products..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="border-border/50 bg-secondary/60 pl-9 focus-visible:ring-primary" />
-          </form>
+          {/* Global Search - Desktop */}
+          <Button
+            variant="outline"
+            onClick={() => setSearchOpen(true)}
+            className="hidden md:flex relative w-64 justify-start text-muted-foreground border-border/50 bg-secondary/60 hover:bg-secondary/80"
+          >
+            <Search className="mr-2 h-4 w-4" />
+            <span className="flex-1 text-left">Search anything...</span>
+            <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+              <span className="text-xs">⌘</span>K
+            </kbd>
+          </Button>
 
-          {/* Mobile Search Button */}
-          <Dialog open={mobileSearchOpen} onOpenChange={setMobileSearchOpen}>
-            <DialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-secondary md:hidden">
-                <Search className="h-5 w-5" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Search Products</DialogTitle>
-                <DialogDescription>
-                  Search for digital products, tools, and toolkits
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleMobileSearch} className="space-y-4">
-                <Input
-                  placeholder="Search products..."
-                  value={mobileSearchQuery}
-                  onChange={(e) => setMobileSearchQuery(e.target.value)}
-                  className="w-full"
-                  autoFocus
-                />
-                <Button type="submit" className="w-full">
-                  <Search className="h-4 w-4 mr-2" />
-                  Search
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
+          {/* Global Search - Mobile */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="hover:bg-secondary md:hidden"
+            onClick={() => setSearchOpen(true)}
+          >
+            <Search className="h-5 w-5" />
+          </Button>
 
           {/* Theme Toggle */}
           <Button type="button" variant="ghost" size="icon" onClick={toggleTheme} className="hover:bg-secondary" aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}>
@@ -182,10 +165,17 @@ export const Header = () => {
               </DrawerHeader>
 
               <div className="space-y-6 px-4 pb-8">
-                <form onSubmit={handleSearch} className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input placeholder="Search products..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="h-11 rounded-xl border-border/60 bg-secondary/60 pl-10 focus-visible:ring-primary" />
-                </form>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSearchOpen(true);
+                    setIsMenuOpen(false);
+                  }}
+                  className="w-full h-11 rounded-xl border-border/60 bg-secondary/60 justify-start text-muted-foreground"
+                >
+                  <Search className="mr-2 h-4 w-4" />
+                  Search anything...
+                </Button>
 
                 <nav className="grid gap-3 text-base font-medium">
                   {navigationLinks.map(link => <DrawerClose asChild key={link.href}>
@@ -235,6 +225,9 @@ export const Header = () => {
 
       {/* Notification Drawer */}
       {user && <NotificationCenter isOpen={notificationOpen} onClose={() => setNotificationOpen(false)} />}
+      
+      {/* Global Search Dialog */}
+      <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </header>;
 };
 const ArrowIcon = () => <svg className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

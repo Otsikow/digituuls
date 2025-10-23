@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ProductCard } from "@/components/ProductCard";
+import { GlobalSearch } from "@/components/GlobalSearch";
 import {
   Search,
   Sparkles,
@@ -24,6 +26,7 @@ import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
 
 const Index = () => {
+  const [searchOpen, setSearchOpen] = useState(false);
   const featuredProducts = [
     {
       id: "1",
@@ -173,7 +176,9 @@ const Index = () => {
                     <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       placeholder="Search for tools, templates, and workflows..."
-                      className="h-12 rounded-2xl border-none bg-background/40 pl-12 text-sm focus-visible:ring-primary sm:h-14 sm:text-base"
+                      className="h-12 rounded-2xl border-none bg-background/40 pl-12 text-sm focus-visible:ring-primary sm:h-14 sm:text-base cursor-pointer"
+                      onClick={() => setSearchOpen(true)}
+                      readOnly
                     />
                   </div>
                   <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
@@ -256,6 +261,9 @@ const Index = () => {
 
       {/* Remaining sections unchanged */}
       <Footer />
+      
+      {/* Global Search Dialog */}
+      <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </div>
   );
 };
