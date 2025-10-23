@@ -25,6 +25,7 @@ import Saved from "./pages/Saved";
 import Referrals from "./pages/Referrals";
 import ReferralLanding from "./pages/ReferralLanding";
 import AdminReferrals from "./pages/AdminReferrals";
+import SearchResults from "./pages/SearchResults";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/search" element={<SearchResults />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/sell" element={<Sell />} />

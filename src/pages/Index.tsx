@@ -3,6 +3,7 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ProductCard } from "@/components/ProductCard";
+import { products as productsData } from "@/data/products";
 import {
   Search,
   Sparkles,
@@ -24,51 +25,7 @@ import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
 
 const Index = () => {
-  const featuredProducts = [
-    {
-      id: "1",
-      title: "SaaS Starter Kit Pro",
-      subtitle: "Complete Next.js boilerplate with auth & payments",
-      price: 14900,
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80",
-      rating: 4.9,
-      reviewCount: 127,
-      isNew: true,
-      category: "SaaS Projects",
-    },
-    {
-      id: "2",
-      title: "AI Content Generator",
-      subtitle: "GPT-powered content creation tool with templates",
-      price: 4900,
-      image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80",
-      rating: 4.8,
-      reviewCount: 89,
-      isBestSeller: true,
-      category: "AI Tools",
-    },
-    {
-      id: "3",
-      title: "Design System Library",
-      subtitle: "200+ components for Figma & React",
-      price: 7900,
-      image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80",
-      rating: 5.0,
-      reviewCount: 234,
-      isBestSeller: true,
-      category: "Design Assets",
-    },
-    {
-      id: "4",
-      title: "Marketing Automation Suite",
-      subtitle: "Email campaigns & analytics dashboard",
-      price: 9900,
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
-      rating: 4.7,
-      reviewCount: 156,
-      category: "Marketing",
-    },
-  ];
+  const featuredProducts = productsData.slice(0, 4);
 
   const stats = [
     { value: "8.2k+", label: "Creators", description: "Verified builders sharing premium products" },

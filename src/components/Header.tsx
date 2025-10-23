@@ -47,14 +47,14 @@ export const Header = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/marketplace?search=${encodeURIComponent(searchQuery)}`);
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
   };
 
   const handleMobileSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (mobileSearchQuery.trim()) {
-      navigate(`/marketplace?search=${encodeURIComponent(mobileSearchQuery)}`);
+      navigate(`/search?q=${encodeURIComponent(mobileSearchQuery)}`);
       setMobileSearchOpen(false);
       setMobileSearchQuery('');
     }
@@ -88,7 +88,7 @@ export const Header = () => {
           {/* Search Bar */}
           <form onSubmit={handleSearch} className="hidden md:flex relative w-64">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Search products..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="border-border/50 bg-secondary/60 pl-9 focus-visible:ring-primary" />
+            <Input placeholder="Search everything..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="border-border/50 bg-secondary/60 pl-9 focus-visible:ring-primary" />
           </form>
 
           {/* Mobile Search Button */}
@@ -100,14 +100,14 @@ export const Header = () => {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Search Products</DialogTitle>
+                <DialogTitle>Search</DialogTitle>
                 <DialogDescription>
-                  Search for digital products, tools, and toolkits
+                  Search across products, tools, toolkits and pages
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleMobileSearch} className="space-y-4">
                 <Input
-                  placeholder="Search products..."
+                  placeholder="Search everything..."
                   value={mobileSearchQuery}
                   onChange={(e) => setMobileSearchQuery(e.target.value)}
                   className="w-full"
