@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Loader2, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { completeReferral, getReferralCode } from "@/lib/referralUtils";
-import logo from "@/assets/logo.png";
+import { Logo } from "@/components/Logo";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -138,7 +138,7 @@ const Auth = () => {
         </Button>
 
         <div className="flex justify-center mb-6 sm:mb-8">
-          <img src={logo} alt="DigiTuuls" className="h-20 w-auto sm:h-24" />
+          <Logo variant="auth" />
         </div>
 
         {showForgotPassword ? (
