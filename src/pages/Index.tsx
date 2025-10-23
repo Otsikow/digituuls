@@ -188,9 +188,9 @@ const Index = () => {
                   <Sparkles className="h-4 w-4" />
                   <span>Professional Digital Marketplace</span>
                 </div>
-                <div className="flex items-center justify-center gap-3 text-muted-foreground md:justify-start">
-                  <img src={logo} alt="DigiTuuls" className="h-10 w-auto" />
-                  <span className="text-sm font-medium">Your growth partner for digital launches</span>
+                <div className="flex flex-col items-center justify-center gap-3 text-center md:items-start md:text-left">
+                  <img src={logo} alt="DigiTuuls" className="h-16 w-auto" />
+                  <span className="text-base font-medium text-muted-foreground">Your growth partner for digital launches</span>
                 </div>
                 <h1 className="text-4xl font-bold tracking-tight text-balance md:text-6xl">
                   Discover, launch, and scale with premium digital tools
