@@ -156,6 +156,14 @@ const Profile = () => {
               >
                 View Saved Items
               </Button>
+              
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => navigate("/referrals")}
+              >
+                Referrals & Earnings
+              </Button>
 
               <Separator />
 

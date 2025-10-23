@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
+import { NotificationBell } from "./NotificationBell";
 import logo from "@/assets/logo.png";
 
 export const Header = () => {
@@ -71,6 +72,8 @@ export const Header = () => {
             </Button>
           </Link>
 
+          {user && <NotificationBell />}
+
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -87,6 +90,9 @@ export const Header = () => {
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/saved")}>
                   Saved Items
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/referrals")}>
+                  Referrals & Earnings
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut}>
                   Sign Out

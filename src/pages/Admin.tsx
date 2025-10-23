@@ -1,9 +1,12 @@
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DollarSign, Users, Package, TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { DollarSign, Users, Package, TrendingUp, ExternalLink } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Admin = () => {
+  const navigate = useNavigate();
   const stats = [
     { title: "Total Revenue", value: "$45,231", icon: DollarSign, change: "+12.5%" },
     { title: "Active Sellers", value: "234", icon: Users, change: "+8.2%" },
@@ -44,6 +47,7 @@ const Admin = () => {
           <TabsList>
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
+            <TabsTrigger value="referrals">Referrals</TabsTrigger>
             <TabsTrigger value="reviews">Reviews</TabsTrigger>
             <TabsTrigger value="audit">Audit Log</TabsTrigger>
           </TabsList>
@@ -66,6 +70,27 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">User management interface coming soon...</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="referrals" className="space-y-4">
+            <Card className="border-border/50 bg-gradient-card">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Referral Program</CardTitle>
+                  </div>
+                  <Button onClick={() => navigate("/admin/referrals")}>
+                    Open Full Dashboard
+                    <ExternalLink className="h-4 w-4 ml-2" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Manage referrals, track commissions, and process payouts.
+                </p>
               </CardContent>
             </Card>
           </TabsContent>
