@@ -53,26 +53,26 @@ export const Header = () => {
   };
   const unreadNotifications = notifications?.filter(n => !n.read).length || 0;
   return <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between gap-3">
+      <div className="container flex h-16 items-center justify-between gap-2 sm:gap-4">
         {/* Left Section - Logo & Navigation */}
-        <div className="flex items-center gap-6">
-          <Link to="/" className="flex items-center space-x-2">
-            <img src={logo} alt="DigiTuuls" className="h-8 w-auto" />
+        <div className="flex items-center gap-3 sm:gap-4 lg:gap-6 flex-1 min-w-0">
+          <Link to="/" className="flex items-center gap-2 shrink-0">
+            <img src={logo} alt="DigiTuuls" className="h-7 sm:h-8 w-auto" />
             <div className="hidden sm:flex flex-col leading-tight">
-              <span className="text-sm font-semibold text-foreground">DigiTuuls</span>
+              <span className="text-sm font-semibold text-foreground whitespace-nowrap">DigiTuuls</span>
               
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-6">
-            {navigationLinks.map(link => <Link key={link.href} to={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <nav className="hidden lg:flex items-center gap-4 xl:gap-6">
+            {navigationLinks.map(link => <Link key={link.href} to={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">
                 {link.label}
               </Link>)}
           </nav>
         </div>
 
         {/* Right Section - Search, Theme Toggle, Notifications, Profile */}
-        <div className="flex items-center gap-3 md:gap-4">
+        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
           {/* Search Bar */}
           <form onSubmit={handleSearch} className="hidden md:flex relative w-64">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
