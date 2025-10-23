@@ -7,6 +7,9 @@ import Index from "./pages/Index";
 import Marketplace from "./pages/Marketplace";
 import ProductDetail from "./pages/ProductDetail";
 import Auth from "./pages/Auth";
+import ReferralLanding from "./pages/ReferralLanding";
+import ReferralAccount from "./pages/ReferralAccount";
+import AdminReferrals from "./pages/AdminReferrals";
 import Sell from "./pages/Sell";
 import Admin from "./pages/Admin";
 import Tools from "./pages/Tools";
@@ -50,6 +53,9 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/purchases" element={<Purchases />} />
           <Route path="/saved" element={<Saved />} />
+          <Route path="/ref/:code" element={<ReferralLanding />} />
+          <Route path="/account/referrals" element={<ReferralAccount />} />
+          <Route path="/admin/referrals" element={<AdminReferrals />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
