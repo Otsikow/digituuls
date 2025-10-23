@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, User, Menu } from "lucide-react";
+import { Search, User, MoonStar, Sun } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import {
@@ -10,12 +10,14 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
+import { useThemeMode } from "@/hooks/useThemeMode";
 import logo from "@/assets/logo.png";
 
 export const Header = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
+  const { toggleTheme, isDark } = useThemeMode();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +52,7 @@ export const Header = () => {
           </nav>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 md:gap-4">
           <form onSubmit={handleSearch} className="hidden md:flex relative w-64">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -63,6 +65,17 @@ export const Header = () => {
 
           <Button variant="ghost" size="icon" className="hover:bg-secondary md:hidden">
             <Search className="h-5 w-5" />
+          </Button>
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            className="hover:bg-secondary"
+            aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+          >
+            {isDark ? <Sun className="h-5 w-5" /> : <MoonStar className="h-5 w-5" />}
           </Button>
 
           <Link to="/sell">
