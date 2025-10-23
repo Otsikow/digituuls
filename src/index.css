@@ -151,3 +151,31 @@ All colors MUST be HSL.
     text-wrap: balance;
   }
 }
+
+@layer utilities {
+  .bg-grid-fine {
+    background-image: linear-gradient(
+        to right,
+        hsl(var(--border) / 0.15) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        hsl(var(--border) / 0.15) 1px,
+        transparent 1px
+      );
+    background-size: 36px 36px;
+  }
+
+  .shadow-soft {
+    box-shadow: 0 25px 80px -35px hsl(var(--primary) / 0.45);
+  }
+
+  .shadow-elevated {
+    box-shadow: 0 35px 120px -40px hsl(var(--primary-glow) / 0.55);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}

@@ -1,32 +1,34 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, User, MoonStar, Sun, Menu, X } from "lucide-react";
+import { Search, User, Bell, MoonStar, Sun, Menu, X } from "lucide-react";
+
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Badge } from "./ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { useAuth } from "@/hooks/useAuth";
-import { useThemeMode } from "@/hooks/useThemeMode";
-import logo from "@/assets/logo.png";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "./ui/drawer";
+import { Drawer, DrawerClose, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "./ui/drawer";
 import { Separator } from "./ui/separator";
+
+import { useAuth } from "@/hooks/useAuth";
+import { useReferrals } from "@/hooks/useReferrals";
+import { useThemeMode } from "@/hooks/useThemeMode";
+import { NotificationCenter } from "./NotificationCenter";
+
+import logo from "@/assets/logo.png";
 
 export const Header = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const [searchQuery, setSearchQuery] = useState("");
+  const { notifications } = useReferrals();
   const { toggleTheme, isDark } = useThemeMode();
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [notificationOpen, setNotificationOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navigationLinks = [
@@ -48,11 +50,14 @@ export const Header = () => {
     navigate("/");
   };
 
+  const unreadNotifications = notifications?.filter((n) => !n.read).length || 0;
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between gap-3">
-        <div className="flex items-center gap-3 md:gap-6">
-          <Link to="/" className="flex items-center gap-2">
+        {/* Left Section - Logo & Navigation */}
+        <div className="flex items-center gap-6">
+          <Link to="/" className="flex items-center space-x-2">
             <img src={logo} alt="DigiTuuls" className="h-8 w-auto" />
             <div className="hidden sm:flex flex-col leading-tight">
               <span className="text-sm font-semibold text-foreground">DigiTuuls</span>
@@ -65,7 +70,7 @@ export const Header = () => {
               <Link
                 key={link.href}
                 to={link.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 {link.label}
               </Link>
@@ -73,8 +78,10 @@ export const Header = () => {
           </nav>
         </div>
 
-        <div className="flex items-center gap-2 md:gap-4">
-          <form onSubmit={handleSearch} className="relative hidden w-64 md:flex">
+        {/* Right Section - Search, Theme Toggle, Notifications, Profile */}
+        <div className="flex items-center gap-3 md:gap-4">
+          {/* Search Bar */}
+          <form onSubmit={handleSearch} className="hidden md:flex relative w-64">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search products..."
@@ -84,6 +91,12 @@ export const Header = () => {
             />
           </form>
 
+          {/* Mobile Search Button */}
+          <Button variant="ghost" size="icon" className="hover:bg-secondary md:hidden">
+            <Search className="h-5 w-5" />
+          </Button>
+
+          {/* Theme Toggle */}
           <Button
             type="button"
             variant="ghost"
@@ -95,12 +108,34 @@ export const Header = () => {
             {isDark ? <Sun className="h-5 w-5" /> : <MoonStar className="h-5 w-5" />}
           </Button>
 
-          <Link to="/sell" className="hidden sm:block">
-            <Button className="bg-gradient-primary shadow-glow transition-opacity hover:opacity-90">
+          {/* Notifications */}
+          {user && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-secondary relative"
+              onClick={() => setNotificationOpen(true)}
+            >
+              <Bell className="h-5 w-5" />
+              {unreadNotifications > 0 && (
+                <Badge
+                  variant="destructive"
+                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                >
+                  {unreadNotifications}
+                </Badge>
+              )}
+            </Button>
+          )}
+
+          {/* Sell Product */}
+          <Link to="/sell">
+            <Button className="bg-gradient-primary hover:opacity-90 transition-opacity shadow-glow">
               Sell Product
             </Button>
           </Link>
 
+          {/* User Profile / Auth */}
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -110,6 +145,9 @@ export const Header = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => navigate("/profile")}>Profile</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/referrals")}>
+                  Referrals & Earnings
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/purchases")}>My Purchases</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/saved")}>Saved Items</DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
@@ -126,6 +164,7 @@ export const Header = () => {
             </Button>
           )}
 
+          {/* Mobile Menu Drawer */}
           <Drawer open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <DrawerTrigger asChild>
               <Button variant="ghost" size="icon" className="hover:bg-secondary md:hidden">
@@ -138,10 +177,13 @@ export const Header = () => {
                   <img src={logo} alt="DigiTuuls" className="h-9 w-auto" />
                   <div className="flex flex-col text-left">
                     <span className="text-base font-semibold text-foreground">DigiTuuls</span>
-                    <span className="text-sm text-muted-foreground">Your growth partner for digital launches</span>
+                    <span className="text-sm text-muted-foreground">
+                      Your growth partner for digital launches
+                    </span>
                   </div>
                 </DrawerTitle>
               </DrawerHeader>
+
               <div className="space-y-6 px-4 pb-8">
                 <form onSubmit={handleSearch} className="relative">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -212,6 +254,14 @@ export const Header = () => {
           </Drawer>
         </div>
       </div>
+
+      {/* Notification Drawer */}
+      {user && (
+        <NotificationCenter
+          isOpen={notificationOpen}
+          onClose={() => setNotificationOpen(false)}
+        />
+      )}
     </header>
   );
 };

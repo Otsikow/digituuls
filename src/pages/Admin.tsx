@@ -1,9 +1,12 @@
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DollarSign, Users, Package, TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { DollarSign, Users, Package, TrendingUp, ExternalLink } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Admin = () => {
+  const navigate = useNavigate();
   const stats = [
     { title: "Total Revenue", value: "$45,231", icon: DollarSign, change: "+12.5%" },
     { title: "Active Sellers", value: "234", icon: Users, change: "+8.2%" },
@@ -37,6 +40,18 @@ const Admin = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* Quick Actions */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
+          <div className="flex gap-4">
+            <Button onClick={() => navigate("/admin/referrals")} variant="outline">
+              <Users className="w-4 h-4 mr-2" />
+              Manage Referrals
+              <ExternalLink className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
         </div>
 
         {/* Tabs */}

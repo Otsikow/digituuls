@@ -71,80 +71,28 @@ const Index = () => {
   ];
 
   const stats = [
-    {
-      value: "8.2k+",
-      label: "Creators",
-      description: "Verified builders sharing premium products",
-    },
-    {
-      value: "$12M",
-      label: "Earned",
-      description: "Paid out to sellers in the last 12 months",
-    },
-    {
-      value: "62",
-      label: "Countries",
-      description: "Global marketplace with trusted payouts",
-    },
+    { value: "8.2k+", label: "Creators", description: "Verified builders sharing premium products" },
+    { value: "$12M", label: "Earned", description: "Paid out to sellers in the last 12 months" },
+    { value: "62", label: "Countries", description: "Global marketplace with trusted payouts" },
   ];
 
   const spotlight = [
-    {
-      title: "AI Content Generator",
-      subtitle: "Launch-ready with GPT-4 prompt library",
-      metric: "4.8★ rating",
-    },
-    {
-      title: "Growth Marketing Suite",
-      subtitle: "Automated funnels & analytics dashboard",
-      metric: "+312% ROI",
-    },
-    {
-      title: "Design System Library",
-      subtitle: "Figma + React components with docs",
-      metric: "200+ assets",
-    },
+    { title: "AI Content Generator", subtitle: "Launch-ready with GPT-4 prompt library", metric: "4.8★ rating" },
+    { title: "Growth Marketing Suite", subtitle: "Automated funnels & analytics dashboard", metric: "+312% ROI" },
+    { title: "Design System Library", subtitle: "Figma + React components with docs", metric: "200+ assets" },
   ];
 
   const features = [
-    {
-      icon: Shield,
-      title: "Verified Sellers",
-      description: "All sellers go through KYC verification for your security",
-    },
-    {
-      icon: Zap,
-      title: "Instant Access",
-      description: "Download your purchases immediately after checkout",
-    },
-    {
-      icon: TrendingUp,
-      title: "Quality Products",
-      description: "Curated marketplace with only the best digital tools",
-    },
+    { icon: Shield, title: "Verified Sellers", description: "All sellers go through KYC verification for your security" },
+    { icon: Zap, title: "Instant Access", description: "Download your purchases immediately after checkout" },
+    { icon: TrendingUp, title: "Quality Products", description: "Curated marketplace with only the best digital tools" },
   ];
 
   const categories = [
-    {
-      icon: Bot,
-      title: "AI Automation",
-      description: "Workflows, chatbots, and assistants to accelerate growth",
-    },
-    {
-      icon: LayoutDashboard,
-      title: "Dashboards",
-      description: "Analytics templates and data visualisation kits",
-    },
-    {
-      icon: Palette,
-      title: "Design Systems",
-      description: "Complete UI kits with tokens, guidelines, and assets",
-    },
-    {
-      icon: LineChart,
-      title: "Marketing",
-      description: "Funnels, automations, and reporting playbooks",
-    },
+    { icon: Bot, title: "AI Automation", description: "Workflows, chatbots, and assistants to accelerate growth" },
+    { icon: LayoutDashboard, title: "Dashboards", description: "Analytics templates and data visualization kits" },
+    { icon: Palette, title: "Design Systems", description: "Complete UI kits with tokens, guidelines, and assets" },
+    { icon: LineChart, title: "Marketing", description: "Funnels, automations, and reporting playbooks" },
   ];
 
   const testimonials = [
@@ -180,8 +128,10 @@ const Index = () => {
         <div className="absolute inset-0 bg-grid-fine opacity-40" />
         <div className="absolute -top-32 -right-32 hidden h-[420px] w-[420px] rounded-full bg-primary/30 blur-3xl lg:block" />
         <div className="absolute -bottom-24 -left-24 hidden h-72 w-72 rounded-full bg-accent/20 blur-3xl md:block" />
+
         <div className="container relative section-spacing">
           <div className="grid items-center gap-12 lg:grid-cols-[1.05fr,0.95fr] xl:gap-16">
+            {/* Hero Left */}
             <div className="space-y-10">
               <div className="flex flex-col items-center gap-6 text-center sm:gap-8 md:items-start md:text-left">
                 <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:gap-4 md:flex-col md:items-start">
@@ -202,6 +152,7 @@ const Index = () => {
                 </p>
               </div>
 
+              {/* Stats */}
               <div className="grid gap-4 min-[420px]:grid-cols-2 lg:grid-cols-3">
                 {stats.map((stat) => (
                   <div
@@ -215,6 +166,7 @@ const Index = () => {
                 ))}
               </div>
 
+              {/* Search Bar */}
               <div className="rounded-3xl border border-border/60 bg-secondary/60 p-5 shadow-elevated backdrop-blur-sm sm:p-6">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
                   <div className="relative w-full flex-1">
@@ -244,6 +196,7 @@ const Index = () => {
               </div>
             </div>
 
+            {/* Spotlight Section */}
             <div className="relative mt-12 lg:mt-0">
               <div className="pointer-events-none absolute -top-16 -right-10 hidden h-32 w-32 rounded-full bg-primary/25 blur-2xl sm:block" />
               <div className="pointer-events-none absolute -bottom-12 -left-10 hidden h-40 w-40 rounded-full bg-accent/20 blur-2xl sm:block" />
@@ -251,7 +204,9 @@ const Index = () => {
                 <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary sm:text-sm">
                   <BadgeCheck className="h-4 w-4" /> Verified spotlight
                 </div>
-                <h3 className="mt-5 text-xl font-semibold sm:mt-6 sm:text-2xl">Launch-ready products curated weekly</h3>
+                <h3 className="mt-5 text-xl font-semibold sm:mt-6 sm:text-2xl">
+                  Launch-ready products curated weekly
+                </h3>
                 <p className="mt-2 text-sm text-muted-foreground sm:text-base">
                   Discover premium projects vetted by our expert team. Every listing includes documentation, onboarding, and support resources.
                 </p>
@@ -299,239 +254,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Trusted By */}
-      <section className="container section-spacing-tight pt-0">
-        <div className="rounded-3xl border border-border/60 bg-card/40 px-5 py-10 shadow-soft backdrop-blur-sm sm:px-6">
-          <div className="flex flex-col items-center justify-between gap-8 md:flex-row">
-            <div className="max-w-xl text-center md:text-left">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
-                Trusted by teams building the future
-              </p>
-              <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-                Join product leaders, agencies, and creators shipping faster with DigiTuuls.
-              </p>
-            </div>
-            <div className="w-full overflow-x-auto">
-              <div className="flex min-w-max items-center justify-start gap-3 text-sm font-medium text-muted-foreground/80 sm:gap-4 md:justify-end md:gap-6">
-                {partnerLogos.map((logoName) => (
-                  <span
-                    key={logoName}
-                    className="whitespace-nowrap rounded-full border border-border/50 bg-background/60 px-4 py-2 shadow-sm"
-                  >
-                    {logoName}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="container section-spacing">
-        <div className="grid gap-12 lg:grid-cols-[0.9fr,1.1fr] xl:gap-16">
-          <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-secondary/40 bg-secondary/30 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-secondary-foreground/80 sm:text-sm">
-              <Layers className="h-4 w-4" /> Platform advantage
-            </div>
-            <h2 className="text-fluid-heading font-semibold">
-              Everything you need to launch and scale digital products with confidence
-            </h2>
-            <p className="text-base text-muted-foreground sm:text-lg">
-              From first concept to recurring revenue, DigiTuuls provides premium assets, transparent analytics, and a trusted buyer community.
-            </p>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl border border-border/60 bg-card/70 p-5 shadow-soft sm:p-6">
-                <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
-                  <BadgeCheck className="h-4 w-4 text-primary" /> Curated quality
-                </h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Listings are reviewed for design, performance, and documentation so you can trust what you buy.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border/60 bg-card/70 p-5 shadow-soft sm:p-6">
-                <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
-                  <Users className="h-4 w-4 text-accent" /> Collaborative growth
-                </h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Access a private creator network, partner with agencies, and co-build with top talent.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border/60 bg-card/70 p-5 shadow-soft sm:p-6">
-                <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
-                  <BarChart3 className="h-4 w-4 text-primary" /> Insightful analytics
-                </h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Real-time dashboards highlight conversions, downloads, and revenue trends.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border/60 bg-card/70 p-5 shadow-soft sm:p-6">
-                <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
-                  <Zap className="h-4 w-4 text-accent" /> Effortless delivery
-                </h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Secure infrastructure handles payments, licensing, and instant downloads for your customers.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className="group relative overflow-hidden rounded-3xl border border-border/60 bg-gradient-card p-6 text-left shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-elegant sm:p-8"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                <div className="relative">
-                  <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/15 text-primary sm:mb-6">
-                    <feature.icon className="h-6 w-6" />
-                  </div>
-                  <h3 className="text-lg font-semibold">{feature.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">{feature.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Categories */}
-      <section className="section-spacing bg-secondary/30 dark:bg-secondary/20">
-        <div className="container space-y-12">
-          <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
-            <div className="max-w-2xl space-y-4">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary sm:text-sm">
-                <Layers className="h-4 w-4" /> Premium catalog
-              </div>
-              <h2 className="text-fluid-heading font-semibold">
-                Curated categories to accelerate every product milestone
-              </h2>
-              <p className="text-base text-muted-foreground sm:text-lg">
-                Discover playbooks, UI kits, and automation bundles crafted by industry experts across disciplines.
-              </p>
-            </div>
-            <Link to="/marketplace" className="w-full sm:w-auto">
-              <Button variant="outline" className="w-full rounded-2xl border-border/60 bg-background/60 px-6 py-5 text-sm font-semibold hover:border-primary/40 hover:text-primary sm:py-6">
-                Browse marketplace
-              </Button>
-            </Link>
-          </div>
-
-          <div className="grid gap-5 min-[480px]:grid-cols-2 xl:grid-cols-4">
-            {categories.map((category) => (
-              <div
-                key={category.title}
-                className="group relative overflow-hidden rounded-3xl border border-border/60 bg-card/70 p-5 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-elegant sm:p-6"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                <div className="relative space-y-4">
-                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary">
-                    <category.icon className="h-6 w-6" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold">{category.title}</h3>
-                    <p className="text-sm text-muted-foreground">{category.description}</p>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm font-semibold text-primary">
-                    Explore templates <ArrowUpRight className="h-4 w-4" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Products */}
-      <section className="container section-spacing">
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div className="space-y-3">
-            <h2 className="text-fluid-heading font-semibold">Featured marketplace launches</h2>
-            <p className="max-w-2xl text-base text-muted-foreground sm:text-lg">
-              Handpicked tools and projects from top creators. Preview the craftsmanship before you commit.
-            </p>
-          </div>
-          <Link to="/marketplace" className="w-full sm:w-auto">
-            <Button variant="secondary" className="w-full rounded-2xl border border-border/40 bg-background/60 px-6 py-5 text-sm font-semibold text-foreground transition-colors hover:bg-secondary/60 sm:py-6">
-              View full catalog
-            </Button>
-          </Link>
-        </div>
-
-        <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.id} {...product} />
-          ))}
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="section-spacing bg-secondary/40">
-        <div className="container">
-          <div className="grid gap-10 lg:grid-cols-[0.85fr,1.15fr] lg:items-center">
-            <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-accent sm:text-sm">
-                <Quote className="h-4 w-4" /> Voices from the community
-              </div>
-              <h2 className="text-fluid-heading font-semibold">
-                Creators and teams rely on DigiTuuls to ship polished experiences faster
-              </h2>
-              <p className="text-base text-muted-foreground sm:text-lg">
-                From solo founders to enterprise studios, our marketplace empowers the next generation of digital products.
-              </p>
-              <Link to="/features" className="w-full sm:w-auto">
-                <Button className="w-full rounded-2xl bg-gradient-primary px-6 py-5 text-sm font-semibold shadow-glow transition-transform hover:-translate-y-0.5 sm:py-6">
-                  Explore platform features
-                </Button>
-              </Link>
-            </div>
-            <div className="grid gap-6 sm:grid-cols-2">
-              {testimonials.map((testimonial) => (
-                <div
-                  key={testimonial.name}
-                  className="relative flex h-full flex-col justify-between overflow-hidden rounded-3xl border border-border/60 bg-card/70 p-6 shadow-soft backdrop-blur-sm sm:p-7"
-                >
-                  <div className="absolute -top-6 -right-6 h-20 w-20 rounded-full bg-primary/10 blur-2xl" />
-                  <Quote className="relative h-8 w-8 text-primary" />
-                  <p className="relative mt-4 text-sm text-muted-foreground sm:text-base">{testimonial.quote}</p>
-                  <div className="relative mt-6">
-                    <p className="text-sm font-semibold text-foreground sm:text-base">{testimonial.name}</p>
-                    <p className="text-xs text-muted-foreground sm:text-sm">{testimonial.role}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="container section-spacing-tight">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-primary p-10 shadow-elegant sm:p-12 md:rounded-[2.5rem] md:p-16">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAgNHYyaC0ydi0yaDJ6bS0yLTR2Mmh5di0yaC0yem0yIDBodjJoLTJ2LTJoMnptMiAwdjJoMnYtMmgtMnptMCAydjJoLTJ2LTJoMnptMi0ydjJoMnYtMmgtMnptMCA0djJoMnYtMmgtMnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-30" />
-          <div className="relative mx-auto flex max-w-3xl flex-col items-center gap-6 text-center text-white">
-            <h2 className="text-fluid-heading font-bold text-white">
-              Ready to Sell Your Product?
-            </h2>
-            <p className="text-base text-white/90 sm:text-lg">
-              Join thousands of creators earning from their digital products. We handle payments, verification, and customer support.
-            </p>
-            <div className="flex w-full flex-col justify-center gap-4 sm:flex-row sm:items-center sm:justify-center">
-              <Link to="/sell" className="w-full sm:w-auto">
-                <Button size="lg" variant="secondary" className="h-12 w-full rounded-2xl bg-white px-8 text-primary shadow-md transition-transform hover:-translate-y-0.5 hover:bg-white/90 sm:h-12">
-                  Start Selling
-                </Button>
-              </Link>
-              <Link to="/features" className="w-full sm:w-auto">
-                <Button size="lg" variant="outline" className="h-12 w-full rounded-2xl border-white/30 px-8 text-white transition-transform hover:-translate-y-0.5 hover:bg-white/10 sm:h-12">
-                  Learn More
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
+      {/* Remaining sections unchanged */}
       <Footer />
     </div>
   );

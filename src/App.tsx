@@ -22,6 +22,9 @@ import Pricing from "./pages/Pricing";
 import Profile from "./pages/Profile";
 import Purchases from "./pages/Purchases";
 import Saved from "./pages/Saved";
+import Referrals from "./pages/Referrals";
+import ReferralLanding from "./pages/ReferralLanding";
+import AdminReferrals from "./pages/AdminReferrals";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +53,9 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/purchases" element={<Purchases />} />
           <Route path="/saved" element={<Saved />} />
+          <Route path="/referrals" element={<Referrals />} />
+          <Route path="/ref/:referralCode" element={<ReferralLanding />} />
+          <Route path="/admin/referrals" element={<AdminReferrals />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
