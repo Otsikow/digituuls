@@ -71,7 +71,7 @@ const Auth = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    const { error } = await signUpWithEmail(
+    const { data, error } = await signUpWithEmail(
       signUpForm.email,
       signUpForm.password,
       signUpForm.fullName
@@ -85,6 +85,42 @@ const Auth = () => {
       });
       setIsLoading(false);
     } else {
+      // Check for referral code in session storage
+      const referralCode = sessionStorage.getItem("referral_code");
+      const referrerId = sessionStorage.getItem("referrer_id");
+      
+      if (referralCode && referrerId && data?.user) {
+        // Link the user to the referrer
+        try {
+          await supabase.from("referrals").update({
+            referred_id: data.user.id,
+            status: "completed",
+            completed_at: new Date().toISOString(),
+          }).eq("referral_code", referralCode);
+          
+          // Update referral click to mark as converted
+          await supabase.from("referral_clicks").update({
+            converted: true,
+            converted_user_id: data.user.id,
+          }).eq("referral_code", referralCode).is("converted_user_id", null);
+          
+          // Send notification to referrer
+          await supabase.from("notifications").insert({
+            user_id: referrerId,
+            type: "referral_signup",
+            title: "New Referral Signup!",
+            message: "Someone signed up using your referral link.",
+            data: { referred_user_id: data.user.id },
+          });
+          
+          // Clear session storage
+          sessionStorage.removeItem("referral_code");
+          sessionStorage.removeItem("referrer_id");
+        } catch (err) {
+          console.error("Error linking referral:", err);
+        }
+      }
+      
       toast({
         title: "Success",
         description: "Account created successfully!",
