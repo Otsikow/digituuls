@@ -45,7 +45,6 @@ export const Header = () => {
         setSearchDialogOpen(true);
       }
     };
-
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
@@ -69,7 +68,8 @@ export const Header = () => {
     navigate("/");
   };
 
-  const unreadNotifications = notifications?.filter((n) => !n.read).length || 0;
+  const unreadNotifications =
+    notifications?.filter((n) => !n.read).length || 0;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -107,7 +107,7 @@ export const Header = () => {
 
         {/* Right Section */}
         <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
-          {/* Search - Desktop */}
+          {/* Search (Desktop) */}
           <form onSubmit={handleSearch} className="hidden md:flex relative w-64">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -123,7 +123,7 @@ export const Header = () => {
             </div>
           </form>
 
-          {/* Search - Mobile */}
+          {/* Search (Mobile) */}
           <Button
             variant="ghost"
             size="icon"
@@ -142,11 +142,7 @@ export const Header = () => {
             className="hover:bg-secondary"
             aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
           >
-            {isDark ? (
-              <Sun className="h-5 w-5" />
-            ) : (
-              <MoonStar className="h-5 w-5" />
-            )}
+            {isDark ? <Sun className="h-5 w-5" /> : <MoonStar className="h-5 w-5" />}
           </Button>
 
           {/* Notifications */}

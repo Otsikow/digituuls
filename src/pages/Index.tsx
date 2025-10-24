@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -20,8 +21,13 @@ import {
   LayoutDashboard,
   LineChart,
   Quote,
+  Layers,
+  Bookmark,
+  Share2,
+  FolderKanban,
+  Star,
+  Download,
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
 
 const Index = () => {
@@ -38,6 +44,36 @@ const Index = () => {
     { title: "Growth Marketing Suite", subtitle: "Automated funnels & analytics dashboard", metric: "+312% ROI" },
     { title: "Design System Library", subtitle: "Figma + React components with docs", metric: "200+ assets" },
   ];
+
+  const categories = [
+    { icon: Bot, title: "AI Automation", description: "Workflows, chatbots, and assistants to accelerate growth" },
+    { icon: LayoutDashboard, title: "Dashboards", description: "Analytics templates and visualization kits" },
+    { icon: Palette, title: "Design Systems", description: "UI kits with tokens, guidelines, and assets" },
+    { icon: LineChart, title: "Marketing", description: "Funnels, automations, and reporting playbooks" },
+  ];
+
+  const testimonials = [
+    {
+      quote:
+        "DigiTuuls helped us launch a new product line in weeks. The quality of the assets is outstanding and onboarding was seamless.",
+      name: "Clara Jennings",
+      role: "Head of Product, Nova Labs",
+    },
+    {
+      quote:
+        "As a creator, I love how polished the seller experience is. Payments are instant and analytics give me clarity on performance.",
+      name: "Jamir Patel",
+      role: "Founder, AutomateIQ",
+    },
+    {
+      quote:
+        "Our team saved hundreds of hours using marketplace toolkits. Support is responsive and the curation is top-tier.",
+      name: "Marisol Díaz",
+      role: "Operations Lead, LaunchHub",
+    },
+  ];
+
+  const partnerLogos = ["Product Hunt", "Framer", "Linear", "Webflow", "Mixpanel", "Notion"];
 
   return (
     <div className="min-h-screen bg-background">
@@ -69,8 +105,7 @@ const Index = () => {
                   Discover, launch, and scale with premium digital tools
                 </h1>
                 <p className="max-w-2xl text-base text-muted-foreground sm:text-lg md:text-fluid-subheading">
-                  DigiTuuls curates high-performing SaaS projects, templates, and automations so your next product or
-                  campaign is ready in record time.
+                  DigiTuuls curates high-performing SaaS projects, templates, and automations so your next product or campaign is ready in record time.
                 </p>
               </div>
 
@@ -127,12 +162,9 @@ const Index = () => {
                 <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary sm:text-sm">
                   <BadgeCheck className="h-4 w-4" /> Verified spotlight
                 </div>
-                <h3 className="mt-5 text-xl font-semibold sm:mt-6 sm:text-2xl">
-                  Launch-ready products curated weekly
-                </h3>
+                <h3 className="mt-5 text-xl font-semibold sm:mt-6 sm:text-2xl">Launch-ready products curated weekly</h3>
                 <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-                  Discover premium projects vetted by our expert team. Every listing includes documentation,
-                  onboarding, and support resources.
+                  Discover premium projects vetted by our expert team. Every listing includes documentation, onboarding, and support resources.
                 </p>
 
                 <div className="mt-6 space-y-3 sm:space-y-4">
@@ -144,9 +176,7 @@ const Index = () => {
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                       <div className="relative flex items-start justify-between gap-4">
                         <div className="space-y-1">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm">
-                            {item.metric}
-                          </p>
+                          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm">{item.metric}</p>
                           <p className="text-base font-medium text-foreground sm:text-lg">{item.title}</p>
                           <p className="text-sm text-muted-foreground">{item.subtitle}</p>
                         </div>
@@ -163,18 +193,14 @@ const Index = () => {
                     <Users className="h-10 w-10 rounded-xl bg-primary/15 p-2 text-primary" />
                     <div>
                       <p className="text-sm font-semibold text-foreground sm:text-base">Growth Network</p>
-                      <p className="text-xs text-muted-foreground sm:text-sm">
-                        Collaborate with vetted partners and agencies.
-                      </p>
+                      <p className="text-xs text-muted-foreground sm:text-sm">Collaborate with vetted partners and agencies.</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <BarChart3 className="h-10 w-10 rounded-xl bg-accent/15 p-2 text-accent" />
                     <div>
                       <p className="text-sm font-semibold text-foreground sm:text-base">Actionable Analytics</p>
-                      <p className="text-xs text-muted-foreground sm:text-sm">
-                        Track conversions, downloads, and revenue in real time.
-                      </p>
+                      <p className="text-xs text-muted-foreground sm:text-sm">Track conversions, downloads, and revenue in real time.</p>
                     </div>
                   </div>
                 </div>
