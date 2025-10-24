@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Loader2, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { completeReferral, getReferralCode } from "@/lib/referralUtils";
 import logo from "@/assets/logo.png";
 
 const Auth = () => {
@@ -28,6 +29,11 @@ const Auth = () => {
 
   useEffect(() => {
     if (user) {
+      // Complete referral if user was referred
+      const referralCode = getReferralCode();
+      if (referralCode) {
+        completeReferral(referralCode, user.id);
+      }
       navigate("/");
     }
   }, [user, navigate]);
@@ -131,8 +137,8 @@ const Auth = () => {
           Back
         </Button>
 
-        <div className="flex justify-center mb-6 sm:mb-8">
-          <img src={logo} alt="DigiTuuls" className="h-20 w-auto sm:h-24" />
+        <div className="flex justify-center mb-8 sm:mb-10">
+          <img src={logo} alt="DigiTuuls" className="h-24 w-auto drop-shadow-lg sm:h-28 md:h-32" />
         </div>
 
         {showForgotPassword ? (

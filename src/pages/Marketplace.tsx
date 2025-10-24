@@ -1,12 +1,17 @@
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal, X } from "lucide-react";
 
 const Marketplace = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const searchQuery = searchParams.get("search") || "";
   const products = [
     {
       id: "1",
@@ -75,14 +80,53 @@ const Marketplace = () => {
 
   const categories = ["All", "SaaS Projects", "AI Tools", "Design Assets", "Marketing", "Templates", "UI Components"];
 
+  // Filter products based on search query and category
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = searchQuery
+      ? product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchQuery.toLowerCase())
+      : true;
+
+    const matchesCategory =
+      selectedCategory === "All" || product.category === selectedCategory;
+
+    return matchesSearch && matchesCategory;
+  });
+
+  const clearSearch = () => {
+    setSearchParams({});
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
       <div className="container py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Marketplace</h1>
-          <p className="text-muted-foreground">Browse {products.length} premium digital products and tools</p>
+          <div className="flex items-center justify-between gap-4 mb-2">
+            <h1 className="text-4xl font-bold">Marketplace</h1>
+            {searchQuery && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={clearSearch}
+                className="flex items-center gap-2"
+              >
+                <X className="h-4 w-4" />
+                Clear search
+              </Button>
+            )}
+          </div>
+          <p className="text-muted-foreground">
+            {searchQuery ? (
+              <>
+                Found {filteredProducts.length} result{filteredProducts.length !== 1 ? 's' : ''} for "{searchQuery}"
+              </>
+            ) : (
+              <>Browse {products.length} premium digital products and tools</>
+            )}
+          </p>
         </div>
 
         {/* Filters */}
@@ -91,12 +135,13 @@ const Marketplace = () => {
             {categories.map((category) => (
               <Badge
                 key={category}
-                variant={category === "All" ? "default" : "outline"}
+                variant={selectedCategory === category ? "default" : "outline"}
                 className={
-                  category === "All"
+                  selectedCategory === category
                     ? "bg-primary text-primary-foreground cursor-pointer"
                     : "cursor-pointer hover:bg-secondary"
                 }
+                onClick={() => setSelectedCategory(category)}
               >
                 {category}
               </Badge>
@@ -124,18 +169,35 @@ const Marketplace = () => {
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} {...product} />
-          ))}
-        </div>
+        {filteredProducts.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredProducts.map((product) => (
+                <ProductCard key={product.id} {...product} />
+              ))}
+            </div>
 
-        {/* Load More */}
-        <div className="flex justify-center mt-12">
-          <Button variant="outline" size="lg" className="border-border/50 hover:bg-secondary">
-            Load More Products
-          </Button>
-        </div>
+            {/* Load More */}
+            {filteredProducts.length >= 6 && (
+              <div className="flex justify-center mt-12">
+                <Button variant="outline" size="lg" className="border-border/50 hover:bg-secondary">
+                  Load More Products
+                </Button>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center py-16">
+            <p className="text-muted-foreground text-lg mb-4">
+              No products found {searchQuery && `for "${searchQuery}"`}
+            </p>
+            {searchQuery && (
+              <Button variant="outline" onClick={clearSearch}>
+                Clear search
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
       <Footer />

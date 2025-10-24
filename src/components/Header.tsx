@@ -1,17 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, User, MoonStar, Sun, Menu, X } from "lucide-react";
+import { Search, User, Bell, MoonStar, Sun, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Badge } from "./ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { useAuth } from "@/hooks/useAuth";
-import { useThemeMode } from "@/hooks/useThemeMode";
-import logo from "@/assets/logo.png";
 import {
   Drawer,
   DrawerClose,
@@ -21,13 +19,35 @@ import {
   DrawerTrigger,
 } from "./ui/drawer";
 import { Separator } from "./ui/separator";
+import { useAuth } from "@/hooks/useAuth";
+import { useReferrals } from "@/hooks/useReferrals";
+import { useThemeMode } from "@/hooks/useThemeMode";
+import { NotificationCenter } from "./NotificationCenter";
+import { SearchDialog } from "./SearchDialog";
+import logo from "@/assets/logo.png";
 
 export const Header = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const [searchQuery, setSearchQuery] = useState("");
+  const { notifications } = useReferrals();
   const { toggleTheme, isDark } = useThemeMode();
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchDialogOpen, setSearchDialogOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Keyboard shortcut (Cmd/Ctrl + K) for search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchDialogOpen(true);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const navigationLinks = [
     { href: "/marketplace", label: "Marketplace" },
@@ -39,7 +59,7 @@ export const Header = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/marketplace?search=${encodeURIComponent(searchQuery)}`);
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
   };
 
@@ -48,24 +68,36 @@ export const Header = () => {
     navigate("/");
   };
 
+  const unreadNotifications =
+    notifications?.filter((n) => !n.read).length || 0;
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between gap-3">
-        <div className="flex items-center gap-3 md:gap-6">
-          <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="DigiTuuls" className="h-8 w-auto" />
+      <div className="container flex h-16 items-center justify-between gap-2 sm:gap-4">
+        {/* Left Section - Logo & Navigation */}
+        <div className="flex items-center gap-3 sm:gap-4 lg:gap-6 flex-1 min-w-0">
+          <Link to="/" className="flex items-center gap-3 shrink-0">
+            <img
+              src={logo}
+              alt="DigiTuuls"
+              className="h-10 sm:h-12 md:h-14 w-auto drop-shadow-sm"
+            />
             <div className="hidden sm:flex flex-col leading-tight">
-              <span className="text-sm font-semibold text-foreground">DigiTuuls</span>
-              <span className="text-xs text-muted-foreground">Launch-ready digital assets</span>
+              <span className="text-lg sm:text-xl font-bold text-foreground whitespace-nowrap">
+                DigiTuuls
+              </span>
+              <span className="text-xs text-muted-foreground">
+                Digital Marketplace
+              </span>
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden lg:flex items-center gap-4 xl:gap-6">
             {navigationLinks.map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
               >
                 {link.label}
               </Link>
@@ -73,17 +105,35 @@ export const Header = () => {
           </nav>
         </div>
 
-        <div className="flex items-center gap-2 md:gap-4">
-          <form onSubmit={handleSearch} className="relative hidden w-64 md:flex">
+        {/* Right Section */}
+        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
+          {/* Search (Desktop) */}
+          <form onSubmit={handleSearch} className="hidden md:flex relative w-64">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search products..."
+              placeholder="Search everything..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="border-border/50 bg-secondary/60 pl-9 focus-visible:ring-primary"
+              onClick={() => setSearchDialogOpen(true)}
+              className="border-border/50 bg-secondary/60 pl-9 pr-16 focus-visible:ring-primary cursor-pointer"
             />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-xs text-muted-foreground">
+              <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">⌘</kbd>
+              <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">K</kbd>
+            </div>
           </form>
 
+          {/* Search (Mobile) */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:bg-secondary md:hidden"
+            onClick={() => setSearchDialogOpen(true)}
+          >
+            <Search className="h-5 w-5" />
+          </Button>
+
+          {/* Theme Toggle */}
           <Button
             type="button"
             variant="ghost"
@@ -95,12 +145,34 @@ export const Header = () => {
             {isDark ? <Sun className="h-5 w-5" /> : <MoonStar className="h-5 w-5" />}
           </Button>
 
-          <Link to="/sell" className="hidden sm:block">
-            <Button className="bg-gradient-primary shadow-glow transition-opacity hover:opacity-90">
+          {/* Notifications */}
+          {user && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-secondary relative"
+              onClick={() => setNotificationOpen(true)}
+            >
+              <Bell className="h-5 w-5" />
+              {unreadNotifications > 0 && (
+                <Badge
+                  variant="destructive"
+                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                >
+                  {unreadNotifications}
+                </Badge>
+              )}
+            </Button>
+          )}
+
+          {/* Sell Product */}
+          <Link to="/sell">
+            <Button className="bg-gradient-primary hover:opacity-90 transition-opacity shadow-glow">
               Sell Product
             </Button>
           </Link>
 
+          {/* User Profile / Auth */}
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -109,10 +181,21 @@ export const Header = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => navigate("/profile")}>Profile</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/purchases")}>My Purchases</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/saved")}>Saved Items</DropdownMenuItem>
-                <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/profile")}>
+                  Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/referrals")}>
+                  Referrals & Earnings
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/purchases")}>
+                  My Purchases
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/saved")}>
+                  Saved Items
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSignOut}>
+                  Sign Out
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
@@ -126,32 +209,47 @@ export const Header = () => {
             </Button>
           )}
 
+          {/* Mobile Menu Drawer */}
           <Drawer open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <DrawerTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-secondary md:hidden">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:bg-secondary md:hidden"
+              >
                 <Menu className="h-5 w-5" />
               </Button>
             </DrawerTrigger>
             <DrawerContent className="border-border/60 bg-background">
               <DrawerHeader className="space-y-4 text-left">
-                <DrawerTitle className="flex items-center gap-3">
-                  <img src={logo} alt="DigiTuuls" className="h-9 w-auto" />
+                <DrawerTitle className="flex items-center gap-4">
+                  <img
+                    src={logo}
+                    alt="DigiTuuls"
+                    className="h-12 w-auto drop-shadow-sm"
+                  />
                   <div className="flex flex-col text-left">
-                    <span className="text-base font-semibold text-foreground">DigiTuuls</span>
-                    <span className="text-sm text-muted-foreground">Your growth partner for digital launches</span>
+                    <span className="text-xl font-bold text-foreground">
+                      DigiTuuls
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      Your growth partner for digital launches
+                    </span>
                   </div>
                 </DrawerTitle>
               </DrawerHeader>
+
               <div className="space-y-6 px-4 pb-8">
-                <form onSubmit={handleSearch} className="relative">
+                <div className="relative">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
-                    placeholder="Search products..."
+                    placeholder="Search everything..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-11 rounded-xl border-border/60 bg-secondary/60 pl-10 focus-visible:ring-primary"
+                    onClick={() => setSearchDialogOpen(true)}
+                    className="h-11 rounded-xl border-border/60 bg-secondary/60 pl-10 focus-visible:ring-primary cursor-pointer"
                   />
-                </form>
+                </div>
 
                 <nav className="grid gap-3 text-base font-medium">
                   {navigationLinks.map((link) => (
@@ -190,19 +288,31 @@ export const Header = () => {
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
                   {user ? (
                     <DrawerClose asChild>
-                      <button type="button" onClick={handleSignOut} className="font-medium text-primary">
+                      <button
+                        type="button"
+                        onClick={handleSignOut}
+                        className="font-medium text-primary"
+                      >
                         Sign out
                       </button>
                     </DrawerClose>
                   ) : (
                     <DrawerClose asChild>
-                      <button type="button" onClick={() => navigate("/auth")} className="font-medium text-primary">
+                      <button
+                        type="button"
+                        onClick={() => navigate("/auth")}
+                        className="font-medium text-primary"
+                      >
                         Sign in
                       </button>
                     </DrawerClose>
                   )}
                   <DrawerClose asChild>
-                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full border border-border/60">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-10 w-10 rounded-full border border-border/60"
+                    >
                       <X className="h-4 w-4" />
                     </Button>
                   </DrawerClose>
@@ -212,6 +322,20 @@ export const Header = () => {
           </Drawer>
         </div>
       </div>
+
+      {/* Notification Drawer */}
+      {user && (
+        <NotificationCenter
+          isOpen={notificationOpen}
+          onClose={() => setNotificationOpen(false)}
+        />
+      )}
+
+      {/* Search Dialog */}
+      <SearchDialog
+        open={searchDialogOpen}
+        onOpenChange={setSearchDialogOpen}
+      />
     </header>
   );
 };
@@ -224,14 +348,14 @@ const ArrowIcon = () => (
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      d="M4.66699 8H11.3337"
+      d="M4.667 8H11.333"
       stroke="currentColor"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
-      d="M8.66699 4.66675L12.0003 7.99992L8.66699 11.3333"
+      d="M8.667 4.667L12 8l-3.333 3.333"
       stroke="currentColor"
       strokeWidth="1.5"
       strokeLinecap="round"

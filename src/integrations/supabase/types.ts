@@ -220,6 +220,270 @@ export type Database = {
           },
         ]
       }
+      referral_commissions: {
+        Row: {
+          id: string
+          referrer_id: string
+          referred_user_id: string
+          purchase_id: string
+          sale_amount: number
+          platform_fee: number
+          commission_amount: number
+          status: Database["public"]["Enums"]["commission_status"]
+          stripe_transaction_id: string | null
+          created_at: string | null
+          confirmed_at: string | null
+          paid_at: string | null
+          payout_id: string | null
+        }
+        Insert: {
+          id?: string
+          referrer_id: string
+          referred_user_id: string
+          purchase_id: string
+          sale_amount: number
+          platform_fee: number
+          commission_amount: number
+          status?: Database["public"]["Enums"]["commission_status"]
+          stripe_transaction_id?: string | null
+          created_at?: string | null
+          confirmed_at?: string | null
+          paid_at?: string | null
+          payout_id?: string | null
+        }
+        Update: {
+          id?: string
+          referrer_id?: string
+          referred_user_id?: string
+          purchase_id?: string
+          sale_amount?: number
+          platform_fee?: number
+          commission_amount?: number
+          status?: Database["public"]["Enums"]["commission_status"]
+          stripe_transaction_id?: string | null
+          created_at?: string | null
+          confirmed_at?: string | null
+          paid_at?: string | null
+          payout_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_commissions_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_commissions_referred_user_id_fkey"
+            columns: ["referred_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_commissions_purchase_id_fkey"
+            columns: ["purchase_id"]
+            isOneToOne: false
+            referencedRelation: "purchases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_commission_payout"
+            columns: ["payout_id"]
+            isOneToOne: false
+            referencedRelation: "referral_payouts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referral_notifications: {
+        Row: {
+          id: string
+          user_id: string
+          type: string
+          title: string
+          message: string
+          data: Json | null
+          read: boolean | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          type: string
+          title: string
+          message: string
+          data?: Json | null
+          read?: boolean | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          type?: string
+          title?: string
+          message?: string
+          data?: Json | null
+          read?: boolean | null
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referral_payouts: {
+        Row: {
+          id: string
+          user_id: string
+          amount: number
+          currency: string | null
+          method: Database["public"]["Enums"]["payout_method"]
+          status: Database["public"]["Enums"]["payout_status"]
+          stripe_payout_id: string | null
+          paypal_payout_id: string | null
+          bank_reference: string | null
+          admin_notes: string | null
+          processed_by: string | null
+          created_at: string | null
+          processed_at: string | null
+          completed_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          amount: number
+          currency?: string | null
+          method: Database["public"]["Enums"]["payout_method"]
+          status?: Database["public"]["Enums"]["payout_status"]
+          stripe_payout_id?: string | null
+          paypal_payout_id?: string | null
+          bank_reference?: string | null
+          admin_notes?: string | null
+          processed_by?: string | null
+          created_at?: string | null
+          processed_at?: string | null
+          completed_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          amount?: number
+          currency?: string | null
+          method?: Database["public"]["Enums"]["payout_method"]
+          status?: Database["public"]["Enums"]["payout_status"]
+          stripe_payout_id?: string | null
+          paypal_payout_id?: string | null
+          bank_reference?: string | null
+          admin_notes?: string | null
+          processed_by?: string | null
+          created_at?: string | null
+          processed_at?: string | null
+          completed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_payouts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_payouts_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referral_settings: {
+        Row: {
+          id: string
+          platform_fee_percentage: number | null
+          referrer_commission_percentage: number | null
+          minimum_payout_amount: number | null
+          payout_frequency: string | null
+          auto_payout_enabled: boolean | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          platform_fee_percentage?: number | null
+          referrer_commission_percentage?: number | null
+          minimum_payout_amount?: number | null
+          payout_frequency?: string | null
+          auto_payout_enabled?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          platform_fee_percentage?: number | null
+          referrer_commission_percentage?: number | null
+          minimum_payout_amount?: number | null
+          payout_frequency?: string | null
+          auto_payout_enabled?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      referral_tracking: {
+        Row: {
+          id: string
+          referrer_id: string
+          referral_code: string
+          ip_address: string | null
+          user_agent: string | null
+          referrer_url: string | null
+          landing_page: string | null
+          converted: boolean | null
+          conversion_date: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          referrer_id: string
+          referral_code: string
+          ip_address?: string | null
+          user_agent?: string | null
+          referrer_url?: string | null
+          landing_page?: string | null
+          converted?: boolean | null
+          conversion_date?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          referrer_id?: string
+          referral_code?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          referrer_url?: string | null
+          landing_page?: string | null
+          converted?: boolean | null
+          conversion_date?: string | null
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_tracking_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       referrals: {
         Row: {
           completed_at: string | null
@@ -512,6 +776,9 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      commission_status: "pending" | "confirmed" | "paid" | "cancelled"
+      payout_method: "stripe" | "paypal" | "bank_transfer" | "manual"
+      payout_status: "pending" | "processing" | "completed" | "failed" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -640,6 +907,9 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      commission_status: ["pending", "confirmed", "paid", "cancelled"],
+      payout_method: ["stripe", "paypal", "bank_transfer", "manual"],
+      payout_status: ["pending", "processing", "completed", "failed", "cancelled"],
     },
   },
 } as const
