@@ -9,12 +9,16 @@ interface QuickSearchProps {
   className?: string;
   placeholder?: string;
   showKeyboardShortcut?: boolean;
+  onClick?: () => void;
+  readOnly?: boolean;
 }
 
 export const QuickSearch = ({ 
   className, 
   placeholder = "Search everything...",
-  showKeyboardShortcut = true 
+  showKeyboardShortcut = true,
+  onClick,
+  readOnly = false
 }: QuickSearchProps) => {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -41,6 +45,10 @@ export const QuickSearch = ({
   };
 
   const handleClick = () => {
+    if (onClick) {
+      onClick();
+      return;
+    }
     if (query.trim()) {
       navigate(`/search?q=${encodeURIComponent(query.trim())}`);
     }
@@ -55,6 +63,7 @@ export const QuickSearch = ({
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onClick={handleClick}
+        readOnly={readOnly}
         className="h-12 rounded-2xl border-none bg-background/40 pl-12 pr-16 text-sm focus-visible:ring-primary sm:h-14 sm:text-base cursor-pointer"
       />
       {showKeyboardShortcut && (

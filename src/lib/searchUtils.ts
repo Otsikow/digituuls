@@ -16,6 +16,7 @@ export interface SearchResult {
   viewCount?: number;
   upvotes?: number;
   score?: number;
+  metadata?: Record<string, any>;
 }
 
 export interface SearchFilters {
@@ -58,20 +59,31 @@ function calculateSimilarity(str1: string, str2: string): number {
 export function performSearchFallback(query: string, limit = 10): SearchResult[] {
   if (!query || !query.trim()) return [];
   const searchTerm = query.trim().toLowerCase();
-  const results: Array<SearchResult & { score: number }> = [];
+  const results: SearchResult[] = [];
 
   for (const item of allSearchableData) {
     let score = 0;
     score += calculateSimilarity(item.title, searchTerm) * 2;
-    score += calculateSimilarity(item.description, searchTerm);
+    score += calculateSimilarity(item.description || "", searchTerm);
     if (item.keywords) {
       for (const kw of item.keywords) score += calculateSimilarity(kw, searchTerm) * 1.5;
     }
-    score += calculateSimilarity(item.category, searchTerm) * 0.5;
-    if (score > 20) results.push({ ...item, score });
+    score += calculateSimilarity(item.category || "", searchTerm) * 0.5;
+    if (score > 20) {
+      results.push({
+        id: item.id,
+        type: "product" as const,
+        title: item.title,
+        description: item.description,
+        url: item.url,
+        category: item.category,
+        tags: item.keywords,
+        score,
+      });
+    }
   }
 
-  return results.sort((a, b) => b.score - a.score).slice(0, limit);
+  return results.sort((a, b) => (b.score || 0) - (a.score || 0)).slice(0, limit);
 }
 
 /* -----------------------------
@@ -214,10 +226,12 @@ class SearchService {
 
   async search(query: string, filters?: SearchFilters): Promise<SearchResult[]> {
     await this.initialize();
-    if (!query.trim() || !this.fuse) return this.searchData.slice(0, 20);
+    if (!query.trim() || !this.fuse) {
+      return this.searchData.slice(0, 20).map(r => ({ ...r, score: 0 }));
+    }
     const results = this.fuse.search(query);
-    let filtered = results.map((r) => ({ ...r.item, score: r.score }));
-    if (filters) filtered = this.applyFilters(filtered, filters);
+    const mapped = results.map((r) => ({ ...r.item, score: r.score || 0 }));
+    const filtered = filters ? this.applyFilters(mapped, filters) : mapped;
     return filtered.slice(0, 50);
   }
 
@@ -235,7 +249,7 @@ class SearchService {
         filters.tags!.some((ft) => t.toLowerCase().includes(ft.toLowerCase()))
       )) return false;
       return true;
-    });
+    }).map(r => ({ ...r, score: r.score || 0 }));
   }
 
   async getSuggestions(query: string, limit = 5): Promise<string[]> {
@@ -273,3 +287,35 @@ class SearchService {
 }
 
 export const searchService = new SearchService();
+
+/* -----------------------------
+   LEGACY SYNC FUNCTIONS FOR GLOBAL SEARCH
+------------------------------ */
+export function performSearch(query: string, limit = 20): SearchResult[] {
+  return performSearchFallback(query, limit);
+}
+
+export function groupResultsByCategory(results: SearchResult[]): Record<string, SearchResult[]> {
+  const grouped: Record<string, SearchResult[]> = {};
+  results.forEach((result) => {
+    const category = result.category || "Other";
+    if (!grouped[category]) {
+      grouped[category] = [];
+    }
+    grouped[category].push(result);
+  });
+  return grouped;
+}
+
+export function getPopularSearches(): string[] {
+  return [
+    "SaaS starter kit",
+    "React components",
+    "AI tools",
+    "Design system",
+    "Marketing automation",
+    "E-commerce template",
+    "Analytics dashboard",
+    "Mobile app template",
+  ];
+}

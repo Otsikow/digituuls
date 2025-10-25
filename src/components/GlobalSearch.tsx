@@ -20,8 +20,7 @@ import {
   User,
   Sparkles
 } from "lucide-react";
-import { performSearch, groupResultsByCategory, getPopularSearches } from "@/lib/searchUtils";
-import { SearchResult } from "@/lib/searchData";
+import { performSearch, groupResultsByCategory, getPopularSearches, SearchResult } from "@/lib/searchUtils";
 
 interface GlobalSearchProps {
   open: boolean;
