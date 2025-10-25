@@ -9,8 +9,8 @@ export const Footer = () => {
           {/* Brand Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-primary shadow-glow overflow-hidden">
-                <img src={logo} alt="DigiTuuls" className="h-12 w-auto" />
+              <div className="flex items-center justify-center">
+                <img src={logo} alt="DigiTuuls" className="h-20 w-auto drop-shadow-lg" />
               </div>
               <div className="text-sm text-muted-foreground">
                 <p className="text-xl font-bold text-foreground">DigiTuuls</p>
