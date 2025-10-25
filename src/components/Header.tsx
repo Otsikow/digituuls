@@ -80,7 +80,7 @@ export const Header = () => {
             <img
               src={logo}
               alt="DigiTuuls"
-              className="h-10 sm:h-12 md:h-14 w-auto drop-shadow-sm"
+              className="h-12 sm:h-14 md:h-16 w-auto drop-shadow-sm"
             />
             <div className="hidden sm:flex flex-col leading-tight">
               <span className="text-lg sm:text-xl font-bold text-foreground whitespace-nowrap">
